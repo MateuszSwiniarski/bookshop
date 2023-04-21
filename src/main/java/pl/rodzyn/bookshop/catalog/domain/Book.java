@@ -1,4 +1,4 @@
-package pl.rodzyn.bookshop;
+package pl.rodzyn.bookshop.catalog.domain;
 
 public class Book {
 
