@@ -21,4 +21,11 @@ public class CatalogService {
                 .filter(book -> book.getTitle().startsWith(title))
                 .collect(Collectors.toList());
     }
+
+    public List<Book> findByAuthor(String author){
+        return repository.findAll()
+                .stream()
+                .filter(book -> book.getAuthor().startsWith(author))
+                .collect(Collectors.toList());
+    }
 }
