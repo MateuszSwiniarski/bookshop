@@ -2,7 +2,7 @@ package pl.rodzyn.bookshop.catalog.infrastructure;
 
 import org.springframework.stereotype.Repository;
 import pl.rodzyn.bookshop.catalog.domain.Book;
-import pl.rodzyn.bookshop.catalog.domain.CatologRepository;
+import pl.rodzyn.bookshop.catalog.domain.CatalogRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,11 +10,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
-public class MemoryCatalogRepository implements CatologRepository {
+class SchoolCatalogRepository implements CatalogRepository {
 
     private Map<Long, Book> storage = new ConcurrentHashMap<>();
 
-    public MemoryCatalogRepository() {
+    public SchoolCatalogRepository() {
         storage.put(1L, new Book(1L, "Pan Tadeusz", "Adam Mickiewicz", 1983));
         storage.put(2L, new Book(2L, "Chłopi", "Własysław Reymon", 1899));
         storage.put(3L, new Book(3L, "Quo Vadis", "Heneryk Sienkiewicz", 1954));
