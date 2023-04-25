@@ -1,5 +1,6 @@
 package pl.rodzyn.bookshop.catalog.application.port;
 
+import lombok.Builder;
 import lombok.Value;
 import pl.rodzyn.bookshop.catalog.domain.Book;
 
@@ -30,11 +31,25 @@ public interface CatalogUseCase {
     }
 
     @Value
+    @Builder
     class UpdateBookCommand {
         Long id;
         String title;
         String author;
-        int year;
+        Integer year;
+
+        public Book updateFields(Book book){
+            if(title != null){
+                book.setTitle(title);
+            }
+            if(author != null){
+                book.setAuthor(author);
+            }
+            if(year != null){
+                book.setYear(year);
+            }
+            return book;
+        }
     }
 
     @Value

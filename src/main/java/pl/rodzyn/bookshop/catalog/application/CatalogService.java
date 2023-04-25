@@ -58,10 +58,8 @@ class CatalogService implements pl.rodzyn.bookshop.catalog.application.port.Cata
     public UpdateBookResponse updateBook(UpdateBookCommand command) {
         return repository.findById(command.getId())
                 .map(book -> {
-                    book.setTitle(command.getTitle());
-                    book.setAuthor(command.getAuthor());
-                    book.setYear(command.getYear());
-                    repository.save(book);
+                    Book updatedBook = command.updateFields(book);
+                    repository.save(updatedBook);
                     return UpdateBookResponse.SUCCESS;
                 })
                 .orElseGet(() -> new UpdateBookResponse(
@@ -70,6 +68,6 @@ class CatalogService implements pl.rodzyn.bookshop.catalog.application.port.Cata
 
     @Override
     public void removeById(Long id) {
-
+        repository.removeById(id);
     }
 }
