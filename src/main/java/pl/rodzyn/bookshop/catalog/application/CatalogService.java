@@ -3,6 +3,7 @@ package pl.rodzyn.bookshop.catalog.application;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase;
 import pl.rodzyn.bookshop.catalog.domain.Book;
 import pl.rodzyn.bookshop.catalog.domain.CatalogRepository;
 
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-class CatalogService implements pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase {
+class CatalogService implements CatalogUseCase {
 
     private final CatalogRepository repository;
 
@@ -28,6 +29,14 @@ class CatalogService implements pl.rodzyn.bookshop.catalog.application.port.Cata
                 .stream()
                 .filter(book -> book.getTitle().startsWith(title))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<Book> findOneByTitle(String title) {
+        return repository.findAll()
+                .stream()
+                .filter(book -> book.getTitle().startsWith(title))
+                .findFirst();
     }
 
     @Override
@@ -50,7 +59,7 @@ class CatalogService implements pl.rodzyn.bookshop.catalog.application.port.Cata
 
     @Override
     public void addBook(CreateBookCommand command) {
-        Book book = new Book(command.getTitle(), command.getAuthor(), command.getYear());
+        Book book = command.toBook();
         repository.save(book);
     }
 

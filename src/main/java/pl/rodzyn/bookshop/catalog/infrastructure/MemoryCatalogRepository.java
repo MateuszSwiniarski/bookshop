@@ -1,6 +1,5 @@
 package pl.rodzyn.bookshop.catalog.infrastructure;
 
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 import pl.rodzyn.bookshop.catalog.domain.Book;
 import pl.rodzyn.bookshop.catalog.domain.CatalogRepository;
