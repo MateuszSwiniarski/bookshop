@@ -18,6 +18,7 @@ public class CatalogController {
 
     @GetMapping
     public List<Book> getAll(){
+        
         return catalog.findAll();
     }
 
