@@ -1,10 +1,9 @@
 package pl.rodzyn.bookshop.catalog.web;
 
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase;
 import pl.rodzyn.bookshop.catalog.domain.Book;
 
@@ -17,13 +16,17 @@ public class CatalogController {
     private final CatalogUseCase catalog;
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public List<Book> getAll(){
         
         return catalog.findAll();
     }
 
     @GetMapping("/{id}")
-    public Book findById(@PathVariable Long id){
-        return catalog.findById(id).orElse(null);
+    public ResponseEntity<Book> getById(@PathVariable Long id){
+        return catalog
+                .findById(id)
+                .map(book -> ResponseEntity.ok(book))
+                .orElse(ResponseEntity.notFound().build());
     }
 }
