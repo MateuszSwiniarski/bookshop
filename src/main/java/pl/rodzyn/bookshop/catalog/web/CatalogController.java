@@ -1,14 +1,20 @@
 package pl.rodzyn.bookshop.catalog.web;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase;
 import pl.rodzyn.bookshop.catalog.domain.Book;
 
+import java.math.BigDecimal;
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+
+import static pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase.*;
 
 @RequestMapping("/catalog")
 @RestController
@@ -41,7 +47,32 @@ public class CatalogController {
     public ResponseEntity<Book> getById(@PathVariable Long id){
         return catalog
                 .findById(id)
-                .map(book -> ResponseEntity.ok(book))
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Void> addBook(@RequestBody RestCreateBookCommand command){
+        Book book = catalog.addBook(command.toCommand());
+        return ResponseEntity.created(createBookUri(book)).build();
+    }
+
+    private URI createBookUri(Book book) {
+        return ServletUriComponentsBuilder.fromCurrentRequestUri().path("/" + book.getId().toString()).build().toUri();
+    }
+
+    @Data
+    private static class RestCreateBookCommand{
+        private String title;
+        private String author;
+        private Integer year;
+        private BigDecimal price;
+
+        CreateBookCommand toCommand(){
+            return new CreateBookCommand(
+                    title, author, year, price
+            );
+        }
     }
 }

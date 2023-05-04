@@ -8,7 +8,6 @@ import pl.rodzyn.bookshop.catalog.domain.CatalogRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @AllArgsConstructor
@@ -69,9 +68,9 @@ class CatalogService implements CatalogUseCase {
     }
 
     @Override
-    public void addBook(CreateBookCommand command) {
+    public Book addBook(CreateBookCommand command) {
         Book book = command.toBook();
-        repository.save(book);
+        return repository.save(book);
     }
 
     @Override
