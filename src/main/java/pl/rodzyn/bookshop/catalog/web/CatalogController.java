@@ -8,6 +8,7 @@ import pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase;
 import pl.rodzyn.bookshop.catalog.domain.Book;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequestMapping("/catalog")
 @RestController
@@ -17,9 +18,23 @@ public class CatalogController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Book> getAll(){
-        
+    public List<Book> getAll(
+            @RequestParam Optional<String> title,
+            @RequestParam Optional<String> author) {
+        if(title.isPresent() && author.isPresent()){
+            return catalog.findByTitleAndAuthor(title.get(), author.get());
+        }else if(title.isPresent()){
+            return catalog.findByTitle(title.get());
+        }else if(author.isPresent()){
+            return catalog.findByAuthor(author.get());
+        }
         return catalog.findAll();
+    }
+
+    @GetMapping(params = {"title"})
+    @ResponseStatus(HttpStatus.OK)
+    public List<Book> getAllFiltered(@RequestParam String title){
+        return catalog.findByTitle(title);
     }
 
     @GetMapping("/{id}")

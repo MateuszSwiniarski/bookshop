@@ -1,16 +1,14 @@
 package pl.rodzyn.bookshop.catalog.application;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase;
 import pl.rodzyn.bookshop.catalog.domain.Book;
 import pl.rodzyn.bookshop.catalog.domain.CatalogRepository;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @AllArgsConstructor
@@ -27,7 +25,7 @@ class CatalogService implements CatalogUseCase {
     public List<Book> findByTitle(String title) {
         return repository.findAll()
                 .stream()
-                .filter(book -> book.getTitle().startsWith(title))
+                .filter(book -> book.getTitle().toLowerCase().contains(title.toLowerCase()))
                 .collect(Collectors.toList());
     }
 
@@ -40,7 +38,7 @@ class CatalogService implements CatalogUseCase {
     public Optional<Book> findOneByTitle(String title) {
         return repository.findAll()
                 .stream()
-                .filter(book -> book.getTitle().startsWith(title))
+                .filter(book -> book.getTitle().toLowerCase().contains(title.toLowerCase()))
                 .findFirst();
     }
 
@@ -48,7 +46,16 @@ class CatalogService implements CatalogUseCase {
     public List<Book> findByAuthor(String author) {
         return repository.findAll()
                 .stream()
-                .filter(book -> book.getAuthor().startsWith(author))
+                .filter(book -> book.getAuthor().toLowerCase().contains(author.toLowerCase()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Book> findByTitleAndAuthor(String title, String author) {
+        return repository.findAll()
+                .stream()
+                .filter(book -> book.getTitle().toLowerCase().contains(title.toLowerCase()))
+                .filter(book -> book.getAuthor().toLowerCase().contains(author.toLowerCase()))
                 .collect(Collectors.toList());
     }
 
@@ -56,10 +63,9 @@ class CatalogService implements CatalogUseCase {
     public Optional<Book> findOneByTitleAndAuthor(String title, String author) {
         return repository.findAll()
                 .stream()
-                .filter(book -> book.getTitle().startsWith(title))
-                .filter(book -> book.getAuthor().startsWith(author))
+                .filter(book -> book.getTitle().toLowerCase().contains(title.toLowerCase()))
+                .filter(book -> book.getAuthor().toLowerCase().contains(author.toLowerCase()))
                 .findFirst();
-
     }
 
     @Override

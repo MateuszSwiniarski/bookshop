@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase;
 import pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase.UpdateBookCommand;
 import pl.rodzyn.bookshop.catalog.domain.Book;
-import pl.rodzyn.bookshop.order.application.QueryOrderService;
 import pl.rodzyn.bookshop.order.application.port.PlaceOrderUseCase;
 import pl.rodzyn.bookshop.order.application.port.QueryOrderUseCase;
 import pl.rodzyn.bookshop.order.domain.OrderItem;
