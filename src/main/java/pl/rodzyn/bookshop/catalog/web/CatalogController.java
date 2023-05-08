@@ -18,7 +18,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
-import static pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase.*;
+import static pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase.CreateBookCommand;
 
 @RequestMapping("/catalog")
 @RestController
@@ -74,10 +74,10 @@ public class CatalogController {
 
     @Data
     private static class RestCreateBookCommand{
-        @NotBlank
+        @NotBlank(message = "Please provide a title")
         private String title;
 
-        @NotBlank
+        @NotBlank(message = "Please provide an author")
         private String author;
 
         @NotNull
