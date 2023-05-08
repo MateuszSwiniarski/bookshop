@@ -58,6 +58,12 @@ public class CatalogController {
         return ResponseEntity.created(createBookUri(book)).build();
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteById(@PathVariable Long id){
+        catalog.removeById(id);
+    }
+
     private URI createBookUri(Book book) {
         return ServletUriComponentsBuilder.fromCurrentRequestUri().path("/" + book.getId().toString()).build().toUri();
     }
