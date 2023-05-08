@@ -5,16 +5,19 @@ import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase;
 import pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase.UpdateBookCommand;
+import pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase.UpdateBookCoverCommand;
 import pl.rodzyn.bookshop.catalog.domain.Book;
 
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
@@ -65,6 +68,18 @@ public class CatalogController {
             String message = String.join(", ", response.getErrors());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
         }
+    }
+
+    @PutMapping("/{id}/cover")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void addBookCover(@PathVariable Long id, @RequestParam("file")MultipartFile file) throws IOException {
+        System.out.println("Got file: " + file.getOriginalFilename());
+        catalog.updateBookCover(new UpdateBookCoverCommand(
+                id,
+                file.getBytes(),
+                file.getContentType(),
+                file.getOriginalFilename()
+        ));
     }
 
     @PostMapping
