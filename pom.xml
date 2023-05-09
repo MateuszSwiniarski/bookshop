@@ -19,6 +19,7 @@
         <lombok.version>1.18.26</lombok.version>
         <hibernate.validator.version>6.1.5.Final</hibernate.validator.version>
         <commons.lang.version>3.11</commons.lang.version>
+        <springdoc.openapi.version>1.5.12</springdoc.openapi.version>
     </properties>
 
     <dependencies>
@@ -52,7 +53,11 @@
             <artifactId>commons-lang3</artifactId>
             <version>${commons.lang.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>${springdoc.openapi.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
