@@ -1,7 +1,6 @@
 package pl.rodzyn.bookshop.order.infrastructure;
 
 import org.springframework.stereotype.Repository;
-import pl.rodzyn.bookshop.catalog.domain.Book;
 import pl.rodzyn.bookshop.order.domain.Order;
 import pl.rodzyn.bookshop.order.domain.OrderRepository;
 
@@ -9,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -33,6 +33,16 @@ public class MemoryOrderRepository implements OrderRepository {
     @Override
     public List<Order> findAll() {
         return new ArrayList<>(storage.values());
+    }
+
+    @Override
+    public Optional<Order> findById(Long id) {
+        return Optional.ofNullable(storage.get(id));
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        storage.remove(id);
     }
 
     private long nextID() {
