@@ -6,12 +6,11 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
 @Data
 @RequiredArgsConstructor
@@ -22,10 +21,13 @@ public class Book {
     @GeneratedValue
     private Long id;
     private String title;
-    private String author;
     private Integer year;
     private BigDecimal price;
     private Long coverId;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable
+    private Set<Author> authors;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -33,9 +35,8 @@ public class Book {
     @LastModifiedDate
     private LocalDateTime updatedat;
 
-    public Book(String title, String author, int year, BigDecimal price) {
+    public Book(String title, int year, BigDecimal price) {
         this.title = title;
-        this.author = author;
         this.year = year;
         this.price = price;
     }
