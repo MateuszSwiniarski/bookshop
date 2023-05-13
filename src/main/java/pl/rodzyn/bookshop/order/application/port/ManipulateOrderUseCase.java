@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
-import pl.rodzyn.bookshop.order.domain.Order;
 import pl.rodzyn.bookshop.order.domain.OrderItem;
 import pl.rodzyn.bookshop.order.domain.OrderStatus;
 import pl.rodzyn.bookshop.order.domain.Recipient;

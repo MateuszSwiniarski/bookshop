@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import pl.rodzyn.bookshop.catalog.domain.Book;
 import pl.rodzyn.bookshop.order.application.port.ManipulateOrderUseCase;
 import pl.rodzyn.bookshop.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
 import pl.rodzyn.bookshop.order.application.port.QueryOrderUseCase;
@@ -20,7 +19,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static pl.rodzyn.bookshop.order.application.port.QueryOrderUseCase.*;
+import static pl.rodzyn.bookshop.order.application.port.QueryOrderUseCase.RichOrder;
 
 @RequestMapping("/orders")
 @RestController
@@ -88,7 +87,7 @@ public class OrderController {
         PlaceOrderCommand toPlaceOrderCommand() {
             List<OrderItem> orderItems = items
                     .stream()
-                    .map(item -> new OrderItem(item.bookId, item.quantity))
+                    .map(item -> new OrderItem(item.getBookId(), item.quantity))
                     .collect(Collectors.toList());
             return new PlaceOrderCommand(orderItems, recipient.toRecipient());
         }
