@@ -2,22 +2,29 @@ package pl.rodzyn.bookshop.order.domain;
 
 import lombok.*;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
+@Data
+@Entity
+@NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
+@Table(name = "orders")
 public class Order {
+    @Id
+    @GeneratedValue
     private Long id;
 
     @Builder.Default
     private OrderStatus status = OrderStatus.NEW;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "order_id")
     private List<OrderItem> items;
 
-    private Recipient recipient;
+    private transient Recipient recipient;
 
     private LocalDateTime createdAt;
 }

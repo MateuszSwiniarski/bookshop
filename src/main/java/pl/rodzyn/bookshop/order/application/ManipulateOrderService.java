@@ -3,14 +3,14 @@ package pl.rodzyn.bookshop.order.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.rodzyn.bookshop.order.application.port.ManipulateOrderUseCase;
+import pl.rodzyn.bookshop.order.db.OrderJpaRepository;
 import pl.rodzyn.bookshop.order.domain.Order;
-import pl.rodzyn.bookshop.order.domain.OrderRepository;
 import pl.rodzyn.bookshop.order.domain.OrderStatus;
 
 @Service
 @RequiredArgsConstructor
 class ManipulateOrderService implements ManipulateOrderUseCase {
-    private final OrderRepository repository;
+    private final OrderJpaRepository repository;
 
     @Override
     public void deleteOrderById(Long id) {

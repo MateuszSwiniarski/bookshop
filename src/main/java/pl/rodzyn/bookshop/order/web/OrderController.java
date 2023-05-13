@@ -41,18 +41,6 @@ public class OrderController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-//    @PostMapping
-//    @ResponseStatus(HttpStatus.CREATED)
-//    public void createOrder(@RequestBody Order command) {
-//        manipulateOrder.createOrder(command);
-//    }
-
-//    @PostMapping
-//    @ResponseStatus(HttpStatus.CREATED)
-//    public void createOrder(@RequestBody CreateOrderCommand command) {
-//        manipulateOrder.placeOrder(command.toPlaceOrderCommand());
-//    }
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Object> createOrder(@RequestBody CreateOrderCommand command) {
