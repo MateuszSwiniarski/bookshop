@@ -3,8 +3,8 @@ package pl.rodzyn.bookshop.catalog.application;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase;
+import pl.rodzyn.bookshop.catalog.db.BookJpaRepository;
 import pl.rodzyn.bookshop.catalog.domain.Book;
-import pl.rodzyn.bookshop.catalog.domain.CatalogRepository;
 import pl.rodzyn.bookshop.uploads.application.ports.UploadUseCase;
 import pl.rodzyn.bookshop.uploads.application.ports.UploadUseCase.SaveUploadCommand;
 import pl.rodzyn.bookshop.uploads.domain.Upload;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 class CatalogService implements CatalogUseCase {
 
-    private final CatalogRepository repository;
+    private final BookJpaRepository repository;
     private final UploadUseCase upload;
 
     @Override
@@ -91,7 +91,7 @@ class CatalogService implements CatalogUseCase {
 
     @Override
     public void removeById(Long id) {
-        repository.removeById(id);
+        repository.deleteById(id);
     }
 
     @Override
