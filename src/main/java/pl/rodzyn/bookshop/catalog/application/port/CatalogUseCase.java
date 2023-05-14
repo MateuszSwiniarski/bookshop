@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface CatalogUseCase {
     List<Book> findByTitle(String title);
@@ -46,13 +47,10 @@ public interface CatalogUseCase {
     @Value
     class CreateBookCommand {
         String title;
-        String author;
+        Set<Long> authors;
         Integer year;
         BigDecimal price;
 
-        public Book toBook(){
-            return new Book(title, author, year, price);
-        }
     }
 
     @Value
@@ -61,7 +59,7 @@ public interface CatalogUseCase {
     class UpdateBookCommand {
         Long id;
         String title;
-        String author;
+        Set<Long> authors;
         Integer year;
         BigDecimal price;
 
@@ -69,9 +67,9 @@ public interface CatalogUseCase {
             if(title != null){
                 book.setTitle(title);
             }
-            if(author != null){
-                book.setAuthor(author);
-            }
+//            if(author != null){
+//                book.setAuthor(author);
+//            }
             if(year != null){
                 book.setYear(year);
             }

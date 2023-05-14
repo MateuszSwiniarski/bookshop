@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase.CreateBookCommand;
 
@@ -123,12 +124,12 @@ public class CatalogController {
 
         CreateBookCommand toCreateCommand(){
             return new CreateBookCommand(
-                    title, author, year, price
+                    title, Set.of(), year, price
             );
         }
 
         UpdateBookCommand toUpdateCommand(Long id){
-            return new UpdateBookCommand(id, title, author, year, price);
+            return new UpdateBookCommand(id, title, Set.of(), year, price);
         }
     }
 }
