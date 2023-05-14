@@ -80,27 +80,48 @@ class CatalogService implements CatalogUseCase {
         return repository.save(book);
     }
 
-    private Book toBook(CreateBookCommand command){
+    private Book toBook(CreateBookCommand command) {
         Book book = new Book(command.getTitle(), command.getYear(), command.getPrice());
-        Set<Author> authors = command.getAuthors().stream()
-                .map(authorId -> authorRepository
-                        .findById(authorId)
-                        .orElseThrow(() -> new IllegalArgumentException("Unable to find author with id: " + authorId)))
-                .collect(Collectors.toSet());
+        Set<Author> authors = fetchAuthorsByIds(command.getAuthors());
         book.setAuthors(authors);
         return book;
+    }
+
+    private Set<Author> fetchAuthorsByIds(Set<Long> authors) {
+        return authors
+                .stream()
+                .map(authorId -> authorRepository
+                    .findById(authorId)
+                    .orElseThrow(() -> new IllegalArgumentException("Unable to find author with id: " + authorId)))
+                .collect(Collectors.toSet());
     }
 
     @Override
     public UpdateBookResponse updateBook(UpdateBookCommand command) {
         return repository.findById(command.getId())
                 .map(book -> {
-                    Book updatedBook = command.updateFields(book);
+                    Book updatedBook = updateFields(command, book);
                     repository.save(updatedBook);
                     return UpdateBookResponse.SUCCESS;
                 })
                 .orElseGet(() -> new UpdateBookResponse(
                         false, Arrays.asList("Book not found with id: " + command.getId())));
+    }
+
+    private Book updateFields(UpdateBookCommand command, Book book) {
+        if(command.getTitle() != null){
+            book.setTitle(command.getTitle());
+        }
+        if(command.getAuthors() != null && command.getAuthors().size() > 0){
+            book.setAuthors(fetchAuthorsByIds(command.getAuthors()));
+        }
+        if(command.getYear() != null){
+            book.setYear(command.getYear());
+        }
+        if(command.getPrice() != null){
+            book.setPrice(command.getPrice());
+        }
+        return book;
     }
 
     @Override
@@ -124,7 +145,7 @@ class CatalogService implements CatalogUseCase {
     public void removeBookCover(Long id) {
         repository.findById(id)
                 .ifPresent(book -> {
-                    if(book.getCoverId() != null) {
+                    if (book.getCoverId() != null) {
                         upload.removeById(book.getCoverId());
                         book.setCoverId(null);
                         repository.save(book);
