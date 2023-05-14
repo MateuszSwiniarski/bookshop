@@ -29,10 +29,7 @@ class CatalogService implements CatalogUseCase {
 
     @Override
     public List<Book> findByTitle(String title) {
-        return repository.findAll()
-                .stream()
-                .filter(book -> book.getTitle().toLowerCase().contains(title.toLowerCase()))
-                .collect(Collectors.toList());
+        return repository.findByTitleContainsIgnoreCase(title);
     }
 
     @Override
@@ -42,36 +39,17 @@ class CatalogService implements CatalogUseCase {
 
     @Override
     public Optional<Book> findOneByTitle(String title) {
-        return repository.findAll()
-                .stream()
-                .filter(book -> book.getTitle().toLowerCase().contains(title.toLowerCase()))
-                .findFirst();
+        return repository.findDistinctFirstByTitleContainsIgnoreCase(title);
     }
 
     @Override
     public List<Book> findByAuthor(String author) {
-        return repository.findAll()
-                .stream()
-//                .filter(book -> book.getAuthor().toLowerCase().contains(author.toLowerCase()))
-                .collect(Collectors.toList());
+        return repository.findByAuthor(author);
     }
 
     @Override
     public List<Book> findByTitleAndAuthor(String title, String author) {
-        return repository.findAll()
-                .stream()
-                .filter(book -> book.getTitle().toLowerCase().contains(title.toLowerCase()))
-//                .filter(book -> book.getAuthor().toLowerCase().contains(author.toLowerCase()))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public Optional<Book> findOneByTitleAndAuthor(String title, String author) {
-        return repository.findAll()
-                .stream()
-                .filter(book -> book.getTitle().toLowerCase().contains(title.toLowerCase()))
-//                .filter(book -> book.getAuthor().toLowerCase().contains(author.toLowerCase()))
-                .findFirst();
+        return repository.findByTitleAndAuthor(title, author);
     }
 
     @Override
