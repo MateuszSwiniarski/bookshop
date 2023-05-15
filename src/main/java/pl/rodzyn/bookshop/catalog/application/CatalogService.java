@@ -11,6 +11,7 @@ import pl.rodzyn.bookshop.uploads.application.ports.UploadUseCase;
 import pl.rodzyn.bookshop.uploads.application.ports.UploadUseCase.SaveUploadCommand;
 import pl.rodzyn.bookshop.uploads.domain.Upload;
 
+import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -53,6 +54,7 @@ class CatalogService implements CatalogUseCase {
     }
 
     @Override
+    @Transactional
     public Book addBook(CreateBookCommand command) {
         Book book = toBook(command);
         return repository.save(book);
