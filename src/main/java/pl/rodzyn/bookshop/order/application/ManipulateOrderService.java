@@ -6,9 +6,11 @@ import pl.rodzyn.bookshop.catalog.db.BookJpaRepository;
 import pl.rodzyn.bookshop.catalog.domain.Book;
 import pl.rodzyn.bookshop.order.application.port.ManipulateOrderUseCase;
 import pl.rodzyn.bookshop.order.db.OrderJpaRepository;
+import pl.rodzyn.bookshop.order.db.RecipientJpaRepository;
 import pl.rodzyn.bookshop.order.domain.Order;
 import pl.rodzyn.bookshop.order.domain.OrderItem;
 import pl.rodzyn.bookshop.order.domain.OrderStatus;
+import pl.rodzyn.bookshop.order.domain.Recipient;
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 class ManipulateOrderService implements ManipulateOrderUseCase {
     private final OrderJpaRepository repository;
     private final BookJpaRepository bookRepository;
+    private final RecipientJpaRepository recipientJpaRepository;
+
 
     @Override
     public void deleteOrderById(Long id) {
@@ -35,12 +39,19 @@ class ManipulateOrderService implements ManipulateOrderUseCase {
                 .collect(Collectors.toSet());
         Order order = Order
                 .builder()
-                .recipient(command.getRecipient())
+                .recipient(getOrCreateRecipient(command.getRecipient()))
                 .items(items)
                 .build();
         Order save = repository.save(order);
         bookRepository.saveAll(updateBooks(items));
         return PlaceOrderResponse.success(save.getId());
+    }
+
+    private Recipient getOrCreateRecipient(Recipient recipient) {
+
+        return recipientJpaRepository
+                .findByEmailIgnoreCase(recipient.getEmail())
+                .orElse(recipient);
     }
 
     private Set<Book> updateBooks(Set<OrderItem> items) {
