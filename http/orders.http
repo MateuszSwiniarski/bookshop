@@ -1,10 +1,19 @@
+### Initalize Data
+POST http://localhost:8080/admin/data
+
+### Catalog
+GET http://localhost:8080/catalog
+
 ###
-GET http://localhost:8080/orders
+POST http://localhost:8080/orders
+Content-Type: application/json
+
 
 ###
 PUT http://localhost:8080/orders/9/status
 Content-Type: application/json
 
 {
-  "status": "CONFIRMED"
+"status": "SHIPPED"
 }
+
