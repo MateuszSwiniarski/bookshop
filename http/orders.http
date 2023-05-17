@@ -8,6 +8,26 @@ GET http://localhost:8080/catalog
 POST http://localhost:8080/orders
 Content-Type: application/json
 
+{
+  "items": [
+    {
+      "bookId": 3,
+      "quantity": 12
+    },
+    {
+      "bookId": 4,
+      "quantity": 8
+    }
+  ],
+  "recipient": {
+    "name": "John Doe",
+    "phone": "123-456-789",
+    "street": "Cwiartki 3/4",
+    "city": "Krakrow",
+    "zipCode": "30-150",
+    "email": "johndoe@example.org"
+  }
+}
 
 ###
 PUT http://localhost:8080/orders/9/status

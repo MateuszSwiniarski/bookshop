@@ -27,6 +27,7 @@ public class Book extends BaseEntity {
     private Integer year;
     private BigDecimal price;
     private Long coverId;
+    private Long available;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable
@@ -39,10 +40,11 @@ public class Book extends BaseEntity {
     @LastModifiedDate
     private LocalDateTime updatedat;
 
-    public Book(String title, int year, BigDecimal price) {
+    public Book(String title, int year, BigDecimal price, Long available) {
         this.title = title;
         this.year = year;
         this.price = price;
+        this.available = available;
     }
     
     public void addAuthor(Author author){

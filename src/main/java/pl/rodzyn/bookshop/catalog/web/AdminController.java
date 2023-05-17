@@ -9,6 +9,8 @@ import pl.rodzyn.bookshop.catalog.db.AuthorJpaRepository;
 import pl.rodzyn.bookshop.catalog.domain.Author;
 import pl.rodzyn.bookshop.catalog.domain.Book;
 import pl.rodzyn.bookshop.order.application.port.ManipulateOrderUseCase;
+import pl.rodzyn.bookshop.order.application.port.ManipulateOrderUseCase.OrderItemCommand;
+import pl.rodzyn.bookshop.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
 import pl.rodzyn.bookshop.order.application.port.QueryOrderUseCase;
 import pl.rodzyn.bookshop.order.domain.OrderItem;
 import pl.rodzyn.bookshop.order.domain.Recipient;
@@ -51,11 +53,11 @@ class AdminController {
                 .email("jan@kowalski.pl")
                 .build();
 
-        ManipulateOrderUseCase.PlaceOrderCommand command = ManipulateOrderUseCase.PlaceOrderCommand
+        PlaceOrderCommand command = PlaceOrderCommand
                 .builder()
                 .recipient(recipient)
-                .item(new OrderItem(effectiveJava.getId(), 16))
-                .item(new OrderItem(puzzlers.getId(), 7))
+                .item(new OrderItemCommand(effectiveJava.getId(), 16))
+                .item(new OrderItemCommand(puzzlers.getId(), 7))
                 .build();
 
         ManipulateOrderUseCase.PlaceOrderResponse response = placeOrder.placeOrder(command);
@@ -77,13 +79,15 @@ class AdminController {
                 "Effective Java",
                 Set.of(joshua.getId()),
                 2005,
-                new BigDecimal("79.00")
+                new BigDecimal("79.00"),
+                50L
         );
         CatalogUseCase.CreateBookCommand javaPuzzlers = new CatalogUseCase.CreateBookCommand(
                 "Java Puzzlers",
                 Set.of(joshua.getId(), neal.getId()),
                 2018,
-                new BigDecimal("99.00")
+                new BigDecimal("99.00"),
+                50L
         );
 
         catalog.addBook(javaPuzzlers);

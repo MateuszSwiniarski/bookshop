@@ -9,6 +9,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.rodzyn.bookshop.order.application.port.ManipulateOrderUseCase;
 import pl.rodzyn.bookshop.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
+import pl.rodzyn.bookshop.order.application.port.ManipulateOrderUseCase.PlaceOrderResponse;
 import pl.rodzyn.bookshop.order.application.port.QueryOrderUseCase;
 import pl.rodzyn.bookshop.order.domain.Order;
 import pl.rodzyn.bookshop.order.domain.OrderItem;
@@ -43,12 +44,13 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Object> createOrder(@RequestBody CreateOrderCommand command) {
-        ManipulateOrderUseCase.PlaceOrderResponse placeOrderResponse = manipulateOrder.placeOrder(command.toPlaceOrderCommand());
+    public ResponseEntity<Object> createOrder(@RequestBody PlaceOrderCommand command) {
+        PlaceOrderResponse placeOrderResponse = manipulateOrder
+                .placeOrder(command);
         return ResponseEntity.created(createBookUri(placeOrderResponse)).build();
     }
 
-    private URI createBookUri(ManipulateOrderUseCase.PlaceOrderResponse response) {
+    private URI createBookUri(PlaceOrderResponse response) {
         return ServletUriComponentsBuilder.fromCurrentRequestUri().path("/" + response.getOrderId().toString()).build().toUri();
     }
 
@@ -65,40 +67,6 @@ public class OrderController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteOrder(@PathVariable Long id) {
         manipulateOrder.deleteOrderById(id);
-    }
-
-    @Data
-    static class CreateOrderCommand {
-        List<OrderItemCommand> items;
-        RecipientCommand recipient;
-
-        PlaceOrderCommand toPlaceOrderCommand() {
-            List<OrderItem> orderItems = items
-                    .stream()
-                    .map(item -> new OrderItem(item.getBookId(), item.quantity))
-                    .collect(Collectors.toList());
-            return new PlaceOrderCommand(orderItems, recipient.toRecipient());
-        }
-    }
-
-    @Data
-    static class OrderItemCommand {
-        Long bookId;
-        int quantity;
-    }
-
-    @Data
-    static class RecipientCommand {
-        String name;
-        String phone;
-        String street;
-        String city;
-        String zipCode;
-        String email;
-
-        Recipient toRecipient() {
-            return new Recipient(name, phone, street, city, zipCode, email);
-        }
     }
 
     @Data
