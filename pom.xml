@@ -21,6 +21,7 @@
         <commons.lang.version>3.11</commons.lang.version>
         <springdoc.openapi.version>1.5.12</springdoc.openapi.version>
         <postgres.version>42.5.4</postgres.version>
+        <opencsv.version>5.7.1</opencsv.version>
     </properties>
 
     <dependencies>
@@ -68,7 +69,11 @@
             <artifactId>springdoc-openapi-ui</artifactId>
             <version>${springdoc.openapi.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>${opencsv.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
