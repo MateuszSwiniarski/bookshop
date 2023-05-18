@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import pl.rodzyn.bookshop.catalog.application.port.CatalogInitializerUseCase;
@@ -14,6 +15,7 @@ import pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase;
 import pl.rodzyn.bookshop.catalog.db.AuthorJpaRepository;
 import pl.rodzyn.bookshop.catalog.domain.Author;
 import pl.rodzyn.bookshop.catalog.domain.Book;
+import pl.rodzyn.bookshop.jpa.BaseEntity;
 import pl.rodzyn.bookshop.order.application.port.ManipulateOrderUseCase;
 import pl.rodzyn.bookshop.order.application.port.QueryOrderUseCase;
 import pl.rodzyn.bookshop.order.domain.Recipient;
@@ -23,7 +25,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase.*;
 
@@ -59,14 +63,27 @@ public class CatalogInitializerService implements CatalogInitializerUseCase {
     }
 
     private void initBook(CsvBook csvBook) {
+        Set<Long> authors = Arrays.stream(csvBook.authors.split(","))
+                .filter(StringUtils::isNoneBlank)
+                .map(String::trim)
+                .map(this::getOrCreateAuthor)
+                .map(BaseEntity::getId)
+                .collect(Collectors.toSet());
+
         CreateBookCommand command = new CreateBookCommand(
                 csvBook.title,
-                Set.of(),
+                authors,
                 csvBook.year,
                 csvBook.amount,
                 50L
         );
         catalog.addBook(command);
+    }
+
+    private Author getOrCreateAuthor(String name) {
+        return authorRepository
+                .findByNameIgnoreCase(name)
+                .orElseGet(() -> authorRepository.save(new Author(name)));
     }
 
     @Data
