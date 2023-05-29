@@ -11,16 +11,12 @@ import pl.rodzyn.bookshop.order.application.port.ManipulateOrderUseCase;
 import pl.rodzyn.bookshop.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
 import pl.rodzyn.bookshop.order.application.port.ManipulateOrderUseCase.PlaceOrderResponse;
 import pl.rodzyn.bookshop.order.application.port.QueryOrderUseCase;
-import pl.rodzyn.bookshop.order.domain.Order;
-import pl.rodzyn.bookshop.order.domain.OrderItem;
 import pl.rodzyn.bookshop.order.domain.OrderStatus;
-import pl.rodzyn.bookshop.order.domain.Recipient;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static pl.rodzyn.bookshop.order.application.port.QueryOrderUseCase.RichOrder;
+import pl.rodzyn.bookshop.order.application.RichOrder;
 
 @RequestMapping("/orders")
 @RestController

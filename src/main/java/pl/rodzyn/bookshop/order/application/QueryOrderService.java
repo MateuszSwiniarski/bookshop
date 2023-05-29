@@ -3,11 +3,9 @@ package pl.rodzyn.bookshop.order.application;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.rodzyn.bookshop.catalog.db.BookJpaRepository;
-import pl.rodzyn.bookshop.catalog.domain.Book;
 import pl.rodzyn.bookshop.order.application.port.QueryOrderUseCase;
 import pl.rodzyn.bookshop.order.db.OrderJpaRepository;
 import pl.rodzyn.bookshop.order.domain.Order;
-import pl.rodzyn.bookshop.order.domain.OrderItem;
 
 import javax.transaction.Transactional;
 import java.util.List;
