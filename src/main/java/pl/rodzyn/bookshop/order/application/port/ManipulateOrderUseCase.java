@@ -1,9 +1,6 @@
 package pl.rodzyn.bookshop.order.application.port;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Singular;
-import lombok.Value;
+import lombok.*;
 import pl.rodzyn.bookshop.order.domain.OrderStatus;
 import pl.rodzyn.bookshop.order.domain.Recipient;
 
@@ -34,6 +31,7 @@ public interface ManipulateOrderUseCase {
         int quantity;
     }
 
+    @Getter
     @Value
     class PlaceOrderResponse {
         boolean success;
