@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase;
 import pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase.CreateBookCommand;
 import pl.rodzyn.bookshop.catalog.db.AuthorJpaRepository;
@@ -19,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class CatalogControllerIT {
 
     @Autowired
@@ -31,7 +33,7 @@ class CatalogControllerIT {
     CatalogController controller;
 
     @Test
-    public void getAllBook() {
+    public void getAllBooks() {
         //given
         Author goetz = authorJpaRepository.save(new Author("Brain Goetz"));
         Author bloch = authorJpaRepository.save(new Author("Joshua Bloch"));
@@ -54,5 +56,59 @@ class CatalogControllerIT {
         //then
         assertEquals(2, all.size());
     }
+
+    @Test
+    public void getBooksByAuthor() {
+        //given
+        Author goetz = authorJpaRepository.save(new Author("Brain Goetz"));
+        Author bloch = authorJpaRepository.save(new Author("Joshua Bloch"));
+        catalogUseCase.addBook(new CreateBookCommand(
+                "Effective Java",
+                Set.of(bloch.getId()),
+                2005,
+                new BigDecimal("99.90"),
+                50L
+        ));
+        catalogUseCase.addBook(new CreateBookCommand(
+                "Java Concurrency in Practise",
+                Set.of(goetz.getId()),
+                2006,
+                new BigDecimal("129.90"),
+                50L
+        ));
+        //when
+        List<Book> all = controller.getAll(Optional.empty(), Optional.of("Bloch"));
+        //then
+        assertEquals(1, all.size());
+        assertEquals("Effective Java", all.get(0).getTitle());
+    }
+
+    @Test
+    public void getBooksByTitle() {
+        //given
+        Author goetz = authorJpaRepository.save(new Author("Brain Goetz"));
+        Author bloch = authorJpaRepository.save(new Author("Joshua Bloch"));
+        catalogUseCase.addBook(new CreateBookCommand(
+                "Effective Java",
+                Set.of(bloch.getId()),
+                2005,
+                new BigDecimal("99.90"),
+                50L
+        ));
+        catalogUseCase.addBook(new CreateBookCommand(
+                "Java Concurrency in Practise",
+                Set.of(goetz.getId()),
+                2006,
+                new BigDecimal("129.90"),
+                50L
+        ));
+        //when
+        List<Book> all = controller.getAll(Optional.of("Java Concurrency in Practise"), Optional.empty());
+        //then
+        assertEquals(1, all.size());
+        assertEquals("Java Concurrency in Practise", all.get(0).getTitle());
+    }
+
+
 
 }
