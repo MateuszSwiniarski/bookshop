@@ -11,7 +11,6 @@ import org.springframework.web.client.RestTemplate;
 import pl.rodzyn.bookshop.order.application.OrdersProperties;
 
 @EnableScheduling
-@EnableJpaAuditing
 @SpringBootApplication
 @EnableConfigurationProperties(OrdersProperties.class)
 public class BookshopApplication {
