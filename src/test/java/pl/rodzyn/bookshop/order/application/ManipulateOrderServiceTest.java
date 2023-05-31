@@ -1,5 +1,6 @@
 package pl.rodzyn.bookshop.order.application;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -40,6 +41,27 @@ class ManipulateOrderServiceTest {
         //then
         assertTrue(response.isSuccess());
     }
+
+    @Test
+    public void userCanOrderMoreBooksThanAvailable() {
+        //given
+        Book effectiveJava = givenEffectiveJava(5L);
+        Book jcip = givenJavaConcurrency(50L);
+        PlaceOrderCommand command = PlaceOrderCommand
+                .builder()
+                .recipient(recipient())
+                .item(new OrderItemCommand(effectiveJava.getId(), 10))
+                .item(new OrderItemCommand(jcip.getId(), 10))
+                .build();
+        //when
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            service.placeOrder(command);
+        });
+        //then
+        assertTrue(exception.getMessage().contains("Too many copies of book " + effectiveJava.getId() +  " requested"));
+    }
+    
+
 
     private Book givenJavaConcurrency(long available) {
         return bookJpaRepository.save(new Book("Java Concurrency in Practise", 2006, new BigDecimal("99.90"), available));
