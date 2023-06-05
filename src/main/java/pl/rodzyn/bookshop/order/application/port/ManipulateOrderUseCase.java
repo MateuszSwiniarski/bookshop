@@ -7,6 +7,8 @@ import pl.rodzyn.bookshop.order.domain.Recipient;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.validation.constraints.Min;
+
 import static java.util.Collections.emptyList;
 
 public interface ManipulateOrderUseCase {

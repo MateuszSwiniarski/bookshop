@@ -10,6 +10,7 @@ import pl.rodzyn.bookshop.jpa.BaseEntity;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.Min;
 
 @Getter
 @Setter
@@ -20,5 +21,6 @@ public class OrderItem extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "book_id")
     private Book book;
+    @Min(1L)
     private int quantity;
 }
