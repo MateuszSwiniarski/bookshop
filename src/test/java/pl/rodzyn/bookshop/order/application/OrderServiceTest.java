@@ -4,11 +4,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.TransactionSystemException;
 import pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase;
 import pl.rodzyn.bookshop.catalog.db.BookJpaRepository;
 import pl.rodzyn.bookshop.catalog.domain.Book;
+import pl.rodzyn.bookshop.clock.Clock;
 import pl.rodzyn.bookshop.order.application.port.QueryOrderUseCase;
 import pl.rodzyn.bookshop.order.domain.OrderStatus;
 import pl.rodzyn.bookshop.order.domain.Recipient;
@@ -51,8 +54,8 @@ class OrderServiceTest {
         PlaceOrderResponse response = service.placeOrder(command);
         //then
         assertTrue(response.isSuccess());
-        assertEquals(35L, AvailableCopiesOf(effectiveJava));
-        assertEquals(40L, AvailableCopiesOf(jcip));
+        assertEquals(35L, availableCopiesOf(effectiveJava));
+        assertEquals(40L, availableCopiesOf(jcip));
     }
 
     @Test
@@ -61,13 +64,13 @@ class OrderServiceTest {
         Book effectiveJava = givenEffectiveJava(50L);
         String recipient = "marek@exapmle.org";
         Long orderId = placeOrder(effectiveJava.getId(), 15, "marek@exapmle.org");
-        assertEquals(35L, AvailableCopiesOf(effectiveJava));
+        assertEquals(35L, availableCopiesOf(effectiveJava));
         //when
         UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, recipient);
         service.updateOrderStatus(command);
         //then
         assertEquals(OrderStatus.CANCELED, queryOrderService.findById(orderId).get().getStatus());
-        assertEquals(50L, AvailableCopiesOf(effectiveJava));
+        assertEquals(50L, availableCopiesOf(effectiveJava));
     }
 
     @Test
@@ -76,14 +79,14 @@ class OrderServiceTest {
         Book effectiveJava = givenEffectiveJava(50L);
         String recipient = "marek@exapmle.org";
         Long orderId = placeOrder(effectiveJava.getId(), 15, "marek@exapmle.org");
-        assertEquals(35L, AvailableCopiesOf(effectiveJava));
+        assertEquals(35L, availableCopiesOf(effectiveJava));
         //when
         UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.PAID, recipient);
         service.updateOrderStatus(command);
         UpdateStatusCommand commandCanc = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, recipient);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> service.updateOrderStatus(commandCanc));
         //then
-        assertEquals(35L, AvailableCopiesOf(effectiveJava));
+        assertEquals(35L, availableCopiesOf(effectiveJava));
         assertEquals(OrderStatus.PAID, queryOrderService.findById(orderId).get().getStatus());
         assertTrue(exception.getMessage().contains("Unable to mark PAID order as CANCELED"));
     }
@@ -94,7 +97,7 @@ class OrderServiceTest {
         Book effectiveJava = givenEffectiveJava(50L);
         String recipient = "marek@exapmle.org";
         Long orderId = placeOrder(effectiveJava.getId(), 15, "marek@exapmle.org");
-        assertEquals(35L, AvailableCopiesOf(effectiveJava));
+        assertEquals(35L, availableCopiesOf(effectiveJava));
         //when
         UpdateStatusCommand commandPaid = new UpdateStatusCommand(orderId, OrderStatus.PAID, recipient);
         service.updateOrderStatus(commandPaid);
@@ -103,7 +106,7 @@ class OrderServiceTest {
         UpdateStatusCommand commandCanceled = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, recipient);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> service.updateOrderStatus(commandCanceled));
         //then
-        assertEquals(35L, AvailableCopiesOf(effectiveJava));
+        assertEquals(35L, availableCopiesOf(effectiveJava));
         assertEquals(OrderStatus.SHIPPED, queryOrderService.findById(orderId).get().getStatus());
         assertTrue(exception.getMessage().contains("Unable to mark SHIPPED order as CANCELED"));
     }
@@ -135,7 +138,7 @@ class OrderServiceTest {
         //when
         assertThrows(TransactionSystemException.class, () -> service.placeOrder(command));
         //then
-        assertEquals(50L, AvailableCopiesOf(effectiveJava));
+        assertEquals(50L, availableCopiesOf(effectiveJava));
     }
 
     @Test
@@ -144,12 +147,12 @@ class OrderServiceTest {
         Book effectiveJava = givenEffectiveJava(50L);
         String marek = "marek@example.org";
         Long orderId = placeOrder(effectiveJava.getId(), 15, marek);
-        assertEquals(35L, AvailableCopiesOf(effectiveJava));
+        assertEquals(35L, availableCopiesOf(effectiveJava));
         //when
         UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, marek);
         service.updateOrderStatus(command);
         //then
-        assertEquals(35L, AvailableCopiesOf(effectiveJava));
+        assertEquals(35L, availableCopiesOf(effectiveJava));
         assertEquals(OrderStatus.NEW, queryOrderService.findById(orderId).get().getStatus());
     }
 
@@ -159,13 +162,13 @@ class OrderServiceTest {
         Book effectiveJava = givenEffectiveJava(50L);
         String marek = "marek@example.org";
         Long orderId = placeOrder(effectiveJava.getId(), 15, marek);
-        assertEquals(35L, AvailableCopiesOf(effectiveJava));
+        assertEquals(35L, availableCopiesOf(effectiveJava));
         //when
         String admin = "admin@example.org";
         UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, admin);
         service.updateOrderStatus(command);
         //then
-        assertEquals(50L, AvailableCopiesOf(effectiveJava));
+        assertEquals(50L, availableCopiesOf(effectiveJava));
         assertEquals(OrderStatus.CANCELED, queryOrderService.findById(orderId).get().getStatus());
     }
 
@@ -175,14 +178,14 @@ class OrderServiceTest {
         Book effectiveJava = givenEffectiveJava(50L);
         String recipient = "marek@exapmle.org";
         Long orderId = placeOrder(effectiveJava.getId(), 15, "marek@exapmle.org");
-        assertEquals(35L, AvailableCopiesOf(effectiveJava));
+        assertEquals(35L, availableCopiesOf(effectiveJava));
         //when
         String admin = "admin@example.org";
         UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.PAID, admin);
         service.updateOrderStatus(command);
         //then
         assertEquals(OrderStatus.PAID, queryOrderService.findById(orderId).get().getStatus());
-        assertEquals(35L, AvailableCopiesOf(effectiveJava));
+        assertEquals(35L, availableCopiesOf(effectiveJava));
     }
 
     @Test
@@ -231,7 +234,7 @@ class OrderServiceTest {
         return Recipient.builder().email(email).build();
     }
 
-    private Long AvailableCopiesOf(Book effectiveJava) {
+    private Long availableCopiesOf(Book effectiveJava) {
         return catalogUseCase.findById(effectiveJava.getId())
                             .get()
                             .getAvailable();
