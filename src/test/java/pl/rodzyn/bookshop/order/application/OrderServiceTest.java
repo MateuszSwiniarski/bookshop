@@ -142,15 +142,47 @@ class OrderServiceTest {
     public void userCannotRevokeOtherUsersOrder() {
         //given
         Book effectiveJava = givenEffectiveJava(50L);
-        String adam = "adam@example.org";
-        Long orderId = placeOrder(effectiveJava.getId(), 15, adam);
+        String marek = "marek@example.org";
+        Long orderId = placeOrder(effectiveJava.getId(), 15, marek);
         assertEquals(35L, AvailableCopiesOf(effectiveJava));
         //when
-        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, "marek@example.org");
+        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, marek);
         service.updateOrderStatus(command);
         //then
         assertEquals(35L, AvailableCopiesOf(effectiveJava));
         assertEquals(OrderStatus.NEW, queryOrderService.findById(orderId).get().getStatus());
+    }
+
+    @Test
+    public void adminCanRevokeOtherUsersOrder() {
+        //given
+        Book effectiveJava = givenEffectiveJava(50L);
+        String marek = "marek@example.org";
+        Long orderId = placeOrder(effectiveJava.getId(), 15, marek);
+        assertEquals(35L, AvailableCopiesOf(effectiveJava));
+        //when
+        String admin = "admin@example.org";
+        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, admin);
+        service.updateOrderStatus(command);
+        //then
+        assertEquals(50L, AvailableCopiesOf(effectiveJava));
+        assertEquals(OrderStatus.CANCELED, queryOrderService.findById(orderId).get().getStatus());
+    }
+
+    @Test
+    public void adminCanMarkORderAsPaid() {
+        //given
+        Book effectiveJava = givenEffectiveJava(50L);
+        String recipient = "marek@exapmle.org";
+        Long orderId = placeOrder(effectiveJava.getId(), 15, "marek@exapmle.org");
+        assertEquals(35L, AvailableCopiesOf(effectiveJava));
+        //when
+        String admin = "admin@example.org";
+        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.PAID, admin);
+        service.updateOrderStatus(command);
+        //then
+        assertEquals(OrderStatus.PAID, queryOrderService.findById(orderId).get().getStatus());
+        assertEquals(35L, AvailableCopiesOf(effectiveJava));
     }
 
     @Test
