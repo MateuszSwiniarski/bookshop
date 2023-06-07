@@ -2,6 +2,7 @@ package pl.rodzyn.bookshop.order.application.port;
 
 import lombok.*;
 import pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase;
+import pl.rodzyn.bookshop.order.domain.Delivery;
 import pl.rodzyn.bookshop.order.domain.OrderStatus;
 import pl.rodzyn.bookshop.order.domain.Recipient;
 
@@ -26,6 +27,7 @@ public interface ManipulateOrderUseCase {
         @Singular
         List<OrderItemCommand> items;
         Recipient recipient;
+        Delivery delivery;
     }
 
     @Value

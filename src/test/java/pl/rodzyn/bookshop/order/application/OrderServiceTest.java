@@ -205,6 +205,24 @@ class OrderServiceTest {
         assertTrue(exception.getMessage().contains("Too many copies of book " + effectiveJava.getId() +  " requested"));
     }
 
+    @Test
+    public void shippingCostsAreAddedToTotalOrderPrice() {
+        //given
+        Book book = givenBook(50L, "49.90");
+        //when
+        Long orderId = placeOrder(book.getId(), 1);
+        //then
+        assertEquals("59.80", orderOf(orderId).getFinalPrice().toPlainString());
+    }
+
+    private RichOrder orderOf(Long orderId){
+        return queryOrderService.findById(orderId).get();
+    }
+
+    private Book givenBook(long available, String price) {
+        return bookJpaRepository.save(new Book("Java Concurrency in Practise", 2006, new BigDecimal(price), available));
+    }
+
     private Long placeOrder(Long bookId, int copies, String recipient){
         PlaceOrderCommand command = PlaceOrderCommand
                 .builder()
