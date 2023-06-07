@@ -1,6 +1,7 @@
 package pl.rodzyn.bookshop.order.application.port;
 
 import lombok.*;
+import pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase;
 import pl.rodzyn.bookshop.order.domain.OrderStatus;
 import pl.rodzyn.bookshop.order.domain.Recipient;
 
@@ -16,7 +17,7 @@ public interface ManipulateOrderUseCase {
 
     void deleteOrderById(Long id);
 
-    void updateOrderStatus(Long id, OrderStatus status);
+    UpdateStatusResponse updateOrderStatus(UpdateStatusCommand command);
 
     @Builder
     @Value
@@ -33,6 +34,14 @@ public interface ManipulateOrderUseCase {
         int quantity;
     }
 
+    @Value
+    @Setter
+    class UpdateStatusCommand {
+        Long orderId;
+        OrderStatus status;
+        String email;
+    }
+
     @Getter
     @Value
     class PlaceOrderResponse {
@@ -45,6 +54,22 @@ public interface ManipulateOrderUseCase {
         }
         public static PlaceOrderResponse failure(String... errors) {
             return new PlaceOrderResponse(false, null, Arrays.asList(errors));
+        }
+    }
+
+
+    @Getter
+    @Value
+    class UpdateStatusResponse {
+        boolean success;
+        OrderStatus status;
+        List<String> errors;
+
+        public static UpdateStatusResponse success(OrderStatus status) {
+            return new UpdateStatusResponse(true, status, emptyList());
+        }
+        public static UpdateStatusResponse failure(String... errors) {
+            return new UpdateStatusResponse(false, null, Arrays.asList(errors));
         }
     }
 }

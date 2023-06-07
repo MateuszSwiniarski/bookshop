@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import pl.rodzyn.bookshop.order.application.port.ManipulateOrderUseCase;
+import pl.rodzyn.bookshop.order.application.port.ManipulateOrderUseCase.UpdateStatusCommand;
 import pl.rodzyn.bookshop.order.db.OrderJpaRepository;
 import pl.rodzyn.bookshop.order.domain.Order;
 import pl.rodzyn.bookshop.order.domain.OrderStatus;
@@ -29,6 +30,10 @@ class AbandonedOrdersJob {
         LocalDateTime orderThan = LocalDateTime.now().minus(paymentPeriod);
         List<Order> orders = repository.findByStatusAndCreatedAtLessThanEqual(OrderStatus.NEW, orderThan);
         log.info("Found orders to be abandoned: " + orders.size());
-        orders.forEach(order -> orderUseCase.updateOrderStatus(order.getId(), OrderStatus.ABANDONED));
+        orders.forEach(order -> {
+            String adminEmail = "admin@example.org";
+            UpdateStatusCommand command = new UpdateStatusCommand(order.getId(), OrderStatus.ABANDONED, adminEmail);
+            orderUseCase.updateOrderStatus(command);
+        });
     }
 }
