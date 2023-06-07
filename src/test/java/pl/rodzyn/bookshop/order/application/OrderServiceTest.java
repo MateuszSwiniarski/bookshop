@@ -81,9 +81,7 @@ class OrderServiceTest {
         UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.PAID, recipient);
         service.updateOrderStatus(command);
         UpdateStatusCommand commandCanc = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, recipient);
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            service.updateOrderStatus(commandCanc);
-        });
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> service.updateOrderStatus(commandCanc));
         //then
         assertEquals(35L, AvailableCopiesOf(effectiveJava));
         assertEquals(OrderStatus.PAID, queryOrderService.findById(orderId).get().getStatus());
@@ -103,9 +101,7 @@ class OrderServiceTest {
         UpdateStatusCommand commandShipped = new UpdateStatusCommand(orderId, OrderStatus.SHIPPED, recipient);
         service.updateOrderStatus(commandShipped);
         UpdateStatusCommand commandCanceled = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, recipient);
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            service.updateOrderStatus(commandCanceled);
-        });
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> service.updateOrderStatus(commandCanceled));
         //then
         assertEquals(35L, AvailableCopiesOf(effectiveJava));
         assertEquals(OrderStatus.SHIPPED, queryOrderService.findById(orderId).get().getStatus());
@@ -121,9 +117,7 @@ class OrderServiceTest {
                 .item(new OrderItemCommand(42L, 0))
                 .build();
         //when
-        assertThrows(EntityNotFoundException.class, () -> {
-            service.placeOrder(command);
-        });
+        assertThrows(EntityNotFoundException.class, () -> service.placeOrder(command));
         //then
         PlaceOrderResponse failure = PlaceOrderResponse.failure("Book doesn't exist");
         assertFalse(failure.isSuccess());
@@ -139,9 +133,7 @@ class OrderServiceTest {
                 .item(new OrderItemCommand(effectiveJava.getId(), -19))
                 .build();
         //when
-        assertThrows(TransactionSystemException.class, () -> {
-            service.placeOrder(command);
-        });
+        assertThrows(TransactionSystemException.class, () -> service.placeOrder(command));
         //then
         assertEquals(50L, AvailableCopiesOf(effectiveJava));
     }
@@ -173,9 +165,7 @@ class OrderServiceTest {
                 .item(new OrderItemCommand(jcip.getId(), 10))
                 .build();
         //when
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            service.placeOrder(command);
-        });
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> service.placeOrder(command));
         //then
         assertTrue(exception.getMessage().contains("Too many copies of book " + effectiveJava.getId() +  " requested"));
     }
