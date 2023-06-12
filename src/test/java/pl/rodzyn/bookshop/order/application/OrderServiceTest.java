@@ -150,7 +150,8 @@ class OrderServiceTest {
         Long orderId = placeOrder(effectiveJava.getId(), 15, marek);
         assertEquals(35L, availableCopiesOf(effectiveJava));
         //when
-        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, marek);
+        String adam = "adam@exapmle.org";
+        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, adam);
         service.updateOrderStatus(command);
         //then
         assertEquals(35L, availableCopiesOf(effectiveJava));

@@ -11,6 +11,7 @@ import pl.rodzyn.bookshop.catalog.db.BookJpaRepository;
 import pl.rodzyn.bookshop.catalog.domain.Book;
 import pl.rodzyn.bookshop.clock.Clock;
 import pl.rodzyn.bookshop.order.application.port.ManipulateOrderUseCase;
+import pl.rodzyn.bookshop.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
 import pl.rodzyn.bookshop.order.domain.OrderStatus;
 import pl.rodzyn.bookshop.order.domain.Recipient;
 
@@ -68,7 +69,7 @@ class AbandonedOrdersJobTest {
     }
 
     private Long placeOrder(Long bookId, int copies){
-        ManipulateOrderUseCase.PlaceOrderCommand command = ManipulateOrderUseCase.PlaceOrderCommand
+        PlaceOrderCommand command = PlaceOrderCommand
                 .builder()
                 .recipient(recipient())
                 .item(new ManipulateOrderUseCase.OrderItemCommand(bookId, copies))
