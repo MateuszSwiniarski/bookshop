@@ -60,7 +60,7 @@ public class CatalogController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("{id}")
+    @PatchMapping("{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void updateBook(@PathVariable Long id, @RequestBody RestBookCommand command){
         CatalogUseCase.UpdateBookResponse response = catalog.updateBook(command.toUpdateCommand(id));
