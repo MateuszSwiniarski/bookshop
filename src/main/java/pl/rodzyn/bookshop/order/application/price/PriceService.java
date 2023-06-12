@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import pl.rodzyn.bookshop.order.domain.Order;
 
 import java.util.List;
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 
 @Service
@@ -13,6 +14,7 @@ public class PriceService {
             new TotalPriceDiscountStrategy()
     );
 
+    @Transactional
     public OrderPrice calculatePrice(Order order) {
         return new OrderPrice(
                 order.getItemsPrice(),

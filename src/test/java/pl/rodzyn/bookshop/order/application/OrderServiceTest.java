@@ -13,6 +13,7 @@ import pl.rodzyn.bookshop.catalog.db.BookJpaRepository;
 import pl.rodzyn.bookshop.catalog.domain.Book;
 import pl.rodzyn.bookshop.clock.Clock;
 import pl.rodzyn.bookshop.order.application.port.QueryOrderUseCase;
+import pl.rodzyn.bookshop.order.domain.Delivery;
 import pl.rodzyn.bookshop.order.domain.OrderStatus;
 import pl.rodzyn.bookshop.order.domain.Recipient;
 
@@ -215,6 +216,40 @@ class OrderServiceTest {
         assertEquals("59.80", orderOf(orderId).getFinalPrice().toPlainString());
     }
 
+    @Test
+    public void shippingCostsAreDiscountedOver100złotys() {
+        //given
+        Book book = givenBook(50L, "49.90");
+        //when
+        Long orderId = placeOrder(book.getId(), 3);
+        //then
+        RichOrder order = orderOf(orderId);
+        assertEquals("149.70", order.getFinalPrice().toPlainString());
+        assertEquals("149.70", order.getOrderPrice().getItemsPrice().toPlainString());
+    }
+
+    @Test
+    public void cheapestBookIsHalfPriceWhenTotalOver200zlotys(){
+        //given
+        Book book = givenBook(50L, "49.90");
+        //when
+        Long orderId = placeOrder(book.getId(), 5);
+        //then
+        RichOrder order = orderOf(orderId);
+        assertEquals("224.55", order.getFinalPrice().toPlainString());
+    }
+
+    @Test
+    public void cheapestBookIsFreeWhenTotalOver400zlotys(){
+        //given
+        Book book = givenBook(50L, "49.90");
+        //when
+        Long orderId = placeOrder(book.getId(), 10);
+        //then
+        RichOrder order = orderOf(orderId);
+        assertEquals("449.10", order.getFinalPrice().toPlainString());
+    }
+
     private RichOrder orderOf(Long orderId){
         return queryOrderService.findById(orderId).get();
     }
@@ -228,6 +263,7 @@ class OrderServiceTest {
                 .builder()
                 .recipient(recipient(recipient))
                 .item(new OrderItemCommand(bookId, copies))
+                .delivery(Delivery.COURIER)
                 .build();
         return service.placeOrder(command).getOrderId();
     }
