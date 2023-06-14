@@ -5,18 +5,30 @@ POST http://localhost:8080/admin/initialization
 GET http://localhost:8080/catalog
 
 ###
+GET http://localhost:8080/orders
+
+### Authors
+GET http://localhost:8080/authors
+
+###
+GET http://localhost:8080/uploads/27
+
+###
+GET http://localhost:8080/uploads/27/file
+
+###
 POST http://localhost:8080/orders
 Content-Type: application/json
 
 {
   "items": [
     {
-      "bookId": 3,
-      "quantity": 12
+      "bookId": 77,
+      "quantity": 1
     },
     {
-      "bookId": 4,
-      "quantity": 8
+      "bookId": 50,
+      "quantity": 2
     }
   ],
   "recipient": {

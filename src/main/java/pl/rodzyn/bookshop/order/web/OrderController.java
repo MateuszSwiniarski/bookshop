@@ -51,7 +51,7 @@ public class OrderController {
         return ServletUriComponentsBuilder.fromCurrentRequestUri().path("/" + response.getOrderId().toString()).build().toUri();
     }
 
-    @PutMapping("/{id}/status")
+    @PatchMapping("/{id}/status")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void updateOrderStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
         String status = body.get("status");
