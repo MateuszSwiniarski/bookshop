@@ -1,4 +1,4 @@
-package pl.rodzyn.bookshop;
+package pl.rodzyn.bookshop.security;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -18,6 +20,7 @@ import java.net.URI;
 import java.util.*;
 
 import pl.rodzyn.bookshop.order.application.RichOrder;
+import pl.rodzyn.bookshop.security.UserSecurity;
 
 @RequestMapping("/orders")
 @RestController
@@ -25,6 +28,7 @@ import pl.rodzyn.bookshop.order.application.RichOrder;
 public class OrderController {
     private final QueryOrderUseCase queryOrder;
     private final ManipulateOrderUseCase manipulateOrder;
+    private final UserSecurity userSecurity;
 
     @Secured({"ROLE_ADMIN"})
     @GetMapping
@@ -35,10 +39,17 @@ public class OrderController {
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping("/{id}")
-    public ResponseEntity<RichOrder> getOrderById(@PathVariable Long id){
+    public ResponseEntity<RichOrder> getOrderById(@PathVariable Long id, @AuthenticationPrincipal User user){
         return queryOrder.findById(id)
-                .map(order -> ResponseEntity.ok(order))
+                .map(order -> authorize(order, user))
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    private ResponseEntity<RichOrder> authorize(RichOrder order, User user){
+        if(userSecurity.isOwnerOrAdmin(order.getRecipient().getEmail(), user)) {
+            return ResponseEntity.ok(order);
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @PostMapping
