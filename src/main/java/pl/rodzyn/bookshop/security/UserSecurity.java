@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserSecurity {
 
-    public boolean isOwnerOrAdmin(String objectOwner, User user){
+    public boolean isOwnerOrAdmin(String objectOwner, User user) {
         return isAdmin(user) || isOwner(objectOwner, user);
     }
 

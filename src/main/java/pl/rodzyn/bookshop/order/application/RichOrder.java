@@ -11,8 +11,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 @Value
-public
-class RichOrder {
+public class RichOrder {
     Long id;
     OrderStatus status;
     Set<OrderItem> items;

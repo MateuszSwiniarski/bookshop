@@ -5,7 +5,7 @@ import lombok.Value;
 @Value
 public class UpdateStatusResult {
     OrderStatus newStatus;
-    boolean revoke;
+    boolean revoked;
 
     static UpdateStatusResult ok(OrderStatus newStatus) {
         return new UpdateStatusResult(newStatus, false);

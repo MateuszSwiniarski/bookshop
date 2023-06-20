@@ -7,10 +7,10 @@ import java.math.BigDecimal;
 @Value
 public class OrderPrice {
     BigDecimal itemsPrice;
-    BigDecimal deliverPrice;
+    BigDecimal deliveryPrice;
     BigDecimal discounts;
 
     public BigDecimal finalPrice() {
-        return itemsPrice.add(deliverPrice).subtract(discounts);
+        return itemsPrice.add(deliveryPrice).subtract(discounts);
     }
 }

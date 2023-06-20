@@ -12,7 +12,7 @@ import pl.rodzyn.bookshop.order.application.OrdersProperties;
 
 @EnableScheduling
 @SpringBootApplication
-@EnableConfigurationProperties(OrdersProperties.class)
+@EnableConfigurationProperties({OrdersProperties.class})
 public class BookshopApplication {
 
     public static void main(String[] args) {

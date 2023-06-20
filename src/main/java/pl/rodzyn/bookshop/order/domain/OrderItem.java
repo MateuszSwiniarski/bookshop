@@ -15,12 +15,11 @@ import javax.validation.constraints.Min;
 @Getter
 @Setter
 @Entity
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class OrderItem extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "book_id")
     private Book book;
-    @Min(1L)
     private int quantity;
 }

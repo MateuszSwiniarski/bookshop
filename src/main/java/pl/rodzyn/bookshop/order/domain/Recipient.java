@@ -5,11 +5,11 @@ import pl.rodzyn.bookshop.jpa.BaseEntity;
 
 import javax.persistence.Entity;
 
-@Builder
 @Getter
 @Setter
-@NoArgsConstructor
+@Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class Recipient extends BaseEntity {
     private String email;
@@ -18,5 +18,4 @@ public class Recipient extends BaseEntity {
     private String street;
     private String city;
     private String zipCode;
-
 }

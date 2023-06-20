@@ -1,17 +1,18 @@
 package pl.rodzyn.bookshop.order.application.port;
 
-import lombok.*;
-import pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Singular;
+import lombok.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.User;
+import pl.rodzyn.bookshop.commons.Either;
 import pl.rodzyn.bookshop.order.domain.Delivery;
 import pl.rodzyn.bookshop.order.domain.OrderStatus;
 import pl.rodzyn.bookshop.order.domain.Recipient;
 
-import java.util.Arrays;
-import java.util.List;
-
-import javax.validation.constraints.Min;
-
-import static java.util.Collections.emptyList;
+import java.util.*;
 
 public interface ManipulateOrderUseCase {
     PlaceOrderResponse placeOrder(PlaceOrderCommand command);
@@ -38,41 +39,46 @@ public interface ManipulateOrderUseCase {
     }
 
     @Value
-    @Setter
     class UpdateStatusCommand {
         Long orderId;
         OrderStatus status;
-        String email;
+        User user;
     }
 
-    @Getter
-    @Value
-    class PlaceOrderResponse {
-        boolean success;
-        Long orderId;
-        List<String> errors;
+    class PlaceOrderResponse extends Either<String, Long> {
+        public PlaceOrderResponse(boolean success, String left, Long right) {
+            super(success, left, right);
+        }
 
         public static PlaceOrderResponse success(Long orderId) {
-            return new PlaceOrderResponse(true, orderId, emptyList());
+            return new PlaceOrderResponse(true, null, orderId);
         }
-        public static PlaceOrderResponse failure(String... errors) {
-            return new PlaceOrderResponse(false, null, Arrays.asList(errors));
+
+        public static PlaceOrderResponse failure(String error) {
+            return new PlaceOrderResponse(false, error, null);
         }
     }
 
-
-    @Getter
-    @Value
-    class UpdateStatusResponse {
-        boolean success;
-        OrderStatus status;
-        List<String> errors;
+    class UpdateStatusResponse extends Either<Error, OrderStatus> {
+        public UpdateStatusResponse(boolean success, Error left, OrderStatus right) {
+            super(success, left, right);
+        }
 
         public static UpdateStatusResponse success(OrderStatus status) {
-            return new UpdateStatusResponse(true, status, emptyList());
+            return new UpdateStatusResponse(true, null, status);
         }
-        public static UpdateStatusResponse failure(String... errors) {
-            return new UpdateStatusResponse(false, null, Arrays.asList(errors));
+
+        public static UpdateStatusResponse failure(Error error) {
+            return new UpdateStatusResponse(false, error, null);
         }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    enum Error {
+        NOT_FOUND(HttpStatus.NOT_FOUND),
+        FORBIDDEN(HttpStatus.FORBIDDEN);
+
+        private final HttpStatus status;
     }
 }

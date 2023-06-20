@@ -6,6 +6,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.TransactionSystemException;
 import pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase;
@@ -17,6 +19,7 @@ import pl.rodzyn.bookshop.order.domain.Delivery;
 import pl.rodzyn.bookshop.order.domain.OrderStatus;
 import pl.rodzyn.bookshop.order.domain.Recipient;
 
+import java.util.*;
 import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 
@@ -63,14 +66,13 @@ class OrderServiceTest {
     public void userCanRevokeOrder() {
         //given
         Book effectiveJava = givenEffectiveJava(50L);
-        String recipient = "marek@exapmle.org";
         Long orderId = placeOrder(effectiveJava.getId(), 15, "marek@exapmle.org");
         assertEquals(35L, availableCopiesOf(effectiveJava));
         //when
-        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, recipient);
+        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELLED, user("marek@exapmle.org"));
         service.updateOrderStatus(command);
         //then
-        assertEquals(OrderStatus.CANCELED, queryOrderService.findById(orderId).get().getStatus());
+        assertEquals(OrderStatus.CANCELLED, queryOrderService.findById(orderId).get().getStatus());
         assertEquals(50L, availableCopiesOf(effectiveJava));
     }
 
@@ -78,13 +80,12 @@ class OrderServiceTest {
     public void userCannotRevokePaidOrder() {
         //given
         Book effectiveJava = givenEffectiveJava(50L);
-        String recipient = "marek@exapmle.org";
         Long orderId = placeOrder(effectiveJava.getId(), 15, "marek@exapmle.org");
         assertEquals(35L, availableCopiesOf(effectiveJava));
         //when
-        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.PAID, recipient);
+        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.PAID, user("marek@exapmle.org"));
         service.updateOrderStatus(command);
-        UpdateStatusCommand commandCanc = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, recipient);
+        UpdateStatusCommand commandCanc = new UpdateStatusCommand(orderId, OrderStatus.CANCELLED, user("marek@exapmle.org"));
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> service.updateOrderStatus(commandCanc));
         //then
         assertEquals(35L, availableCopiesOf(effectiveJava));
@@ -96,15 +97,14 @@ class OrderServiceTest {
     public void userCannotRevokedShippedOrder() {
         //given
         Book effectiveJava = givenEffectiveJava(50L);
-        String recipient = "marek@exapmle.org";
         Long orderId = placeOrder(effectiveJava.getId(), 15, "marek@exapmle.org");
         assertEquals(35L, availableCopiesOf(effectiveJava));
         //when
-        UpdateStatusCommand commandPaid = new UpdateStatusCommand(orderId, OrderStatus.PAID, recipient);
+        UpdateStatusCommand commandPaid = new UpdateStatusCommand(orderId, OrderStatus.PAID, user("marek@exapmle.org"));
         service.updateOrderStatus(commandPaid);
-        UpdateStatusCommand commandShipped = new UpdateStatusCommand(orderId, OrderStatus.SHIPPED, recipient);
+        UpdateStatusCommand commandShipped = new UpdateStatusCommand(orderId, OrderStatus.SHIPPED, user("marek@exapmle.org"));
         service.updateOrderStatus(commandShipped);
-        UpdateStatusCommand commandCanceled = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, recipient);
+        UpdateStatusCommand commandCanceled = new UpdateStatusCommand(orderId, OrderStatus.CANCELLED, user("marek@exapmle.org"));
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> service.updateOrderStatus(commandCanceled));
         //then
         assertEquals(35L, availableCopiesOf(effectiveJava));
@@ -150,8 +150,7 @@ class OrderServiceTest {
         Long orderId = placeOrder(effectiveJava.getId(), 15, marek);
         assertEquals(35L, availableCopiesOf(effectiveJava));
         //when
-        String adam = "adam@exapmle.org";
-        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, adam);
+        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELLED, user("adam@exapmle.org"));
         service.updateOrderStatus(command);
         //then
         assertEquals(35L, availableCopiesOf(effectiveJava));
@@ -166,12 +165,11 @@ class OrderServiceTest {
         Long orderId = placeOrder(effectiveJava.getId(), 15, marek);
         assertEquals(35L, availableCopiesOf(effectiveJava));
         //when
-        String admin = "admin@example.org";
-        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELED, admin);
+        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.CANCELLED, adminUser());
         service.updateOrderStatus(command);
         //then
         assertEquals(50L, availableCopiesOf(effectiveJava));
-        assertEquals(OrderStatus.CANCELED, queryOrderService.findById(orderId).get().getStatus());
+        assertEquals(OrderStatus.CANCELLED, queryOrderService.findById(orderId).get().getStatus());
     }
 
     @Test
@@ -182,8 +180,7 @@ class OrderServiceTest {
         Long orderId = placeOrder(effectiveJava.getId(), 15, "marek@exapmle.org");
         assertEquals(35L, availableCopiesOf(effectiveJava));
         //when
-        String admin = "admin@example.org";
-        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.PAID, admin);
+        UpdateStatusCommand command = new UpdateStatusCommand(orderId, OrderStatus.PAID, adminUser());
         service.updateOrderStatus(command);
         //then
         assertEquals(OrderStatus.PAID, queryOrderService.findById(orderId).get().getStatus());
@@ -266,7 +263,16 @@ class OrderServiceTest {
                 .item(new OrderItemCommand(bookId, copies))
                 .delivery(Delivery.COURIER)
                 .build();
-        return service.placeOrder(command).getOrderId();
+        return service.placeOrder(command).getRight();
+    }
+
+    private User user(String email){
+        return new User(email, "", List.of(new SimpleGrantedAuthority("ROLE_USER")));
+
+    }
+
+    private User adminUser() {
+        return new User("admin", "", List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
     }
 
     private Long placeOrder(Long bookId, int copies){
