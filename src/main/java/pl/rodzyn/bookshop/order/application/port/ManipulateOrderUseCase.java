@@ -7,6 +7,7 @@ import lombok.Singular;
 import lombok.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import pl.rodzyn.bookshop.commons.Either;
 import pl.rodzyn.bookshop.order.domain.Delivery;
 import pl.rodzyn.bookshop.order.domain.OrderStatus;
@@ -42,7 +43,7 @@ public interface ManipulateOrderUseCase {
     class UpdateStatusCommand {
         Long orderId;
         OrderStatus status;
-        User user;
+        UserDetails user;
     }
 
     class PlaceOrderResponse extends Either<String, Long> {

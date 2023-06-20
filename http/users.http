@@ -1,0 +1,32 @@
+// @no-redirect
+POST localhost:8080/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "xxx"
+}
+
+### orders
+GET localhost:8080/orders
+
+
+### registration
+POST localhost:8080/users
+Content-Type: application/json
+
+{
+  "username": "johndoe@example.org",
+  "password": "xxx"
+}
+
+### login
+
+// @no-redirect
+POST localhost:8080/login
+Content-Type: application/json
+
+{
+  "username": "johndoe@example.org",
+  "password": "xxx"
+}

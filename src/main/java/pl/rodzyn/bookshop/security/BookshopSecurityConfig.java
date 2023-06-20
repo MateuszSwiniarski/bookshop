@@ -25,13 +25,14 @@ import java.util.List;
 @Configuration
 @EnableGlobalMethodSecurity(securedEnabled = true)
 @EnableConfigurationProperties(AdminConfig.class)
-public class BookshopSecurityConfig extends WebSecurityConfigurerAdapter {
+//@Profile({"development", "production"})
+class BookaroSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final UserEntityRepository userEntityRepository;
     private final AdminConfig config;
 
     @Bean
-    User systemAdmin() {
+    User systemUser() {
         return config.adminUser();
     }
 
@@ -39,14 +40,14 @@ public class BookshopSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http
-            .authorizeRequests()
-            .mvcMatchers(HttpMethod.GET, "/catalog/**", "/uploads/**", "/authors/**").permitAll()
-            .mvcMatchers(HttpMethod.POST, "/orders", "/login").permitAll()
-            .anyRequest().authenticated()
-        .and()
-            .httpBasic()
-        .and()
-            .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .authorizeRequests()
+                .mvcMatchers(HttpMethod.GET, "/catalog/**", "/uploads/**", "/authors/**").permitAll()
+                .mvcMatchers(HttpMethod.POST, "/orders", "/login", "/users").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .httpBasic()
+                .and()
+                .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
     @SneakyThrows
@@ -57,14 +58,14 @@ public class BookshopSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(authenticationProvider());
     }
 
     @Bean
     AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        BookshopUserDetailsService detailsService = new BookshopUserDetailsService(userEntityRepository, config );
+        BookshopUserDetailsService detailsService = new BookshopUserDetailsService(userEntityRepository, config);
         provider.setUserDetailsService(detailsService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
