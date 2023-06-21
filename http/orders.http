@@ -1,23 +1,12 @@
-### Initalize Data
-POST http://localhost:8080/admin/initialization
+### Initialize Data
+POST http://localhost:8080/admin/data
+
 
 ### Catalog
 GET http://localhost:8080/catalog
 
-###
-GET http://localhost:8080/orders
-
-###
-GET http://localhost:8080/orders/121
-
 ### Authors
 GET http://localhost:8080/authors
-
-###
-GET http://localhost:8080/uploads/27
-
-###
-GET http://localhost:8080/uploads/27/file
 
 ###
 POST http://localhost:8080/orders
@@ -26,11 +15,11 @@ Content-Type: application/json
 {
   "items": [
     {
-      "bookId": 77,
+      "bookId": 89,
       "quantity": 1
     },
     {
-      "bookId": 50,
+      "bookId": 12,
       "quantity": 2
     }
   ],
@@ -38,17 +27,23 @@ Content-Type: application/json
     "name": "John Doe",
     "phone": "123-456-789",
     "street": "Cwiartki 3/4",
-    "city": "Krakrow",
+    "city": "Krakow",
     "zipCode": "30-150",
     "email": "johndoe@example.org"
   }
 }
 
 ###
-PUT http://localhost:8080/orders/9/status
+GET http://localhost:8080/orders/121
+
+###
+GET http://localhost:8080/uploads/90/file
+
+###
+PUT http://localhost:8080/orders/16/status
 Content-Type: application/json
 
 {
-"status": "SHIPPED"
+  "status": "CANCELED"
 }
 

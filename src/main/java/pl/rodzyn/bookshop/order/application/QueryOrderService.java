@@ -2,6 +2,7 @@ package pl.rodzyn.bookshop.order.application;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.rodzyn.bookshop.catalog.db.BookJpaRepository;
 import pl.rodzyn.bookshop.order.application.port.QueryOrderUseCase;
 import pl.rodzyn.bookshop.order.application.price.OrderPrice;
@@ -9,7 +10,6 @@ import pl.rodzyn.bookshop.order.application.price.PriceService;
 import pl.rodzyn.bookshop.order.db.OrderJpaRepository;
 import pl.rodzyn.bookshop.order.domain.Order;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

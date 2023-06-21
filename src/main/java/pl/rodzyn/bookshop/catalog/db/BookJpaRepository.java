@@ -9,19 +9,24 @@ import java.util.Optional;
 
 public interface BookJpaRepository extends JpaRepository<Book, Long> {
 
-    @Query(" SELECT DISTINCT b FROM Book b JOIN FETCH b.authors")
+    @Query("SELECT DISTINCT b FROM Book b JOIN FETCH b.authors")
     List<Book> findAllEager();
 
     List<Book> findByAuthors_nameContainsIgnoreCase(String name);
 
+    List<Book> findByTitleStartsWithIgnoreCase(String title);
+
+    @Query(
+            " SELECT b FROM Book b JOIN b.authors a " +
+                    " WHERE " +
+                    " lower(a.name) LIKE lower(concat('%', :name,'%')) "
+    )
+    List<Book> findByAuthor(@Param("name") String name);
+
+
     List<Book> findByTitleContainsIgnoreCase(String title);
 
     Optional<Book> findDistinctFirstByTitleContainsIgnoreCase(String title);
-
-    @Query(" SELECT b FROM Book b JOIN b.authors a " +
-            " WHERE " +
-            " lower(a.name) LIKE lower(concat('%', :name, '%')) ")
-    List<Book> findByAuthor(@Param("name") String name);
 
     @Query(" SELECT b FROM Book b JOIN b.authors a " +
             " WHERE " +

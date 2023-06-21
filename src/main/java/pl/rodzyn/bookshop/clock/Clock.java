@@ -13,7 +13,7 @@ public interface Clock {
             this.time = time;
         }
 
-        public Fake(){
+        public Fake() {
             this(LocalDateTime.now());
         }
 
@@ -22,7 +22,7 @@ public interface Clock {
             return time;
         }
 
-        public void tick(Duration duration){
+        public void tick(Duration duration) {
             time = time.plus(duration);
         }
     }

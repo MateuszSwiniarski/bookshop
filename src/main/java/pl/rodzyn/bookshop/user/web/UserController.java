@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pl.rodzyn.bookshop.user.application.port.UserRegistrationUseCase;
+import pl.rodzyn.bookshop.user.application.port.UserRegisterUseCase;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
@@ -16,9 +16,9 @@ import javax.validation.constraints.Size;
 @RestController
 @RequestMapping("/users")
 @AllArgsConstructor
-public class UserController {
+class UserController {
 
-    private final UserRegistrationUseCase register;
+    private final UserRegisterUseCase register;
 
     @PostMapping
     public ResponseEntity<?> register(@Valid @RequestBody RegisterCommand command) {
@@ -37,4 +37,5 @@ public class UserController {
         @Size(min = 3, max = 100)
         String password;
     }
+
 }

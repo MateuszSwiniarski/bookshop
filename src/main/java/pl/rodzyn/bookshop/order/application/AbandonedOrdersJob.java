@@ -6,6 +6,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import pl.rodzyn.bookshop.clock.Clock;
 import pl.rodzyn.bookshop.order.application.port.ManipulateOrderUseCase;
 import pl.rodzyn.bookshop.order.application.port.ManipulateOrderUseCase.UpdateStatusCommand;
@@ -13,7 +14,6 @@ import pl.rodzyn.bookshop.order.db.OrderJpaRepository;
 import pl.rodzyn.bookshop.order.domain.Order;
 import pl.rodzyn.bookshop.order.domain.OrderStatus;
 
-import javax.transaction.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,7 +25,7 @@ class AbandonedOrdersJob {
     private final OrderJpaRepository repository;
     private final ManipulateOrderUseCase orderUseCase;
     private final OrdersProperties properties;
-    private final User systemAdmin;
+    private final User systemUser;
     private final Clock clock;
 
     @Transactional
@@ -36,7 +36,7 @@ class AbandonedOrdersJob {
         List<Order> orders = repository.findByStatusAndCreatedAtLessThanEqual(OrderStatus.NEW, olderThan);
         log.info("Found orders to be abandoned: " + orders.size());
         orders.forEach(order -> {
-            UpdateStatusCommand command = new UpdateStatusCommand(order.getId(), OrderStatus.ABANDONED, systemAdmin);
+            UpdateStatusCommand command = new UpdateStatusCommand(order.getId(), OrderStatus.ABANDONED, systemUser);
             orderUseCase.updateOrderStatus(command);
         });
     }

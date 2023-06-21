@@ -24,7 +24,7 @@ import pl.rodzyn.bookshop.user.db.UserEntityRepository;
 @EnableGlobalMethodSecurity(securedEnabled = true)
 @EnableConfigurationProperties(AdminConfig.class)
 @Profile({"!test"})
-class BookshopSecurityConfig extends WebSecurityConfigurerAdapter {
+class BookshopSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final UserEntityRepository userEntityRepository;
     private final AdminConfig config;

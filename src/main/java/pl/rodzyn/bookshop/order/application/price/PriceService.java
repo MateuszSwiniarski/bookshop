@@ -1,10 +1,10 @@
 package pl.rodzyn.bookshop.order.application.price;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.rodzyn.bookshop.order.domain.Order;
 
 import java.util.List;
-import javax.transaction.Transactional;
 import java.math.BigDecimal;
 
 @Service
@@ -29,4 +29,5 @@ public class PriceService {
                 .map(strategy -> strategy.calculate(order))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
 }

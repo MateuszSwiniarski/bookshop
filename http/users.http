@@ -8,7 +8,7 @@ Content-Type: application/json
 }
 
 ### orders
-GET localhost:8080/orders
+GET localhost:8080/catalog
 
 
 ### registration

@@ -10,8 +10,7 @@ import java.util.*;
 import java.util.stream.*;
 
 @AllArgsConstructor
-public class UserEntityDetails implements UserDetails {
-
+class UserEntityDetails implements UserDetails {
     private final UserEntity entity;
 
     @Override

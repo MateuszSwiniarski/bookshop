@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/uploads")
 @AllArgsConstructor
-public class UploadsController {
+class UploadsController {
     private final UploadUseCase upload;
 
     @GetMapping("/{id}")
@@ -41,8 +41,7 @@ public class UploadsController {
         return upload.getById(id)
                 .map(file -> {
                     String contentDisposition = "attachment; filename=\"" + file.getFilename() + "\"";
-                    byte[] bytes = file.getFile();
-                    Resource resource = new ByteArrayResource(bytes);
+                    Resource resource = new ByteArrayResource(file.getFile());
                     return ResponseEntity
                             .ok()
                             .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)

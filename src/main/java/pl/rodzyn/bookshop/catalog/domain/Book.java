@@ -21,7 +21,6 @@ import java.util.Set;
 @ToString(exclude = "authors")
 @RequiredArgsConstructor
 @Entity
-@EntityListeners(AuditingEntityListener.class)
 public class Book extends BaseEntity {
     @Column(unique = true)
     private String title;
@@ -35,30 +34,24 @@ public class Book extends BaseEntity {
     @JsonIgnoreProperties("books")
     private Set<Author> authors = new HashSet<>();
 
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedat;
-
-    public Book(String title, int year, BigDecimal price, Long available) {
+    public Book(String title, Integer year, BigDecimal price, Long available) {
         this.title = title;
         this.year = year;
         this.price = price;
         this.available = available;
     }
-    
-    public void addAuthor(Author author){
+
+    public void addAuthor(Author author) {
         authors.add(author);
         author.getBooks().add(this);
     }
 
-    public void removeAuthor(Author author){
+    public void removeAuthor(Author author) {
         authors.remove(author);
         author.getBooks().remove(this);
     }
 
-    public void removeAuthors(){
+    public void removeAuthors() {
         Book self = this;
         authors.forEach(author -> author.getBooks().remove(self));
         authors.clear();

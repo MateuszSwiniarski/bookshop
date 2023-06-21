@@ -14,6 +14,7 @@ import pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase;
 import pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase.UpdateBookCommand;
 import pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase.UpdateBookCoverCommand;
 import pl.rodzyn.bookshop.catalog.domain.Book;
+import pl.rodzyn.bookshop.web.CreatedURI;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -29,7 +30,7 @@ import static pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase.CreateB
 @RequestMapping("/catalog")
 @RestController
 @AllArgsConstructor
-public class CatalogController {
+class CatalogController {
     private final CatalogUseCase catalog;
 
     @GetMapping
@@ -37,46 +38,39 @@ public class CatalogController {
     public List<Book> getAll(
             @RequestParam Optional<String> title,
             @RequestParam Optional<String> author) {
-        if(title.isPresent() && author.isPresent()){
+        if (title.isPresent() && author.isPresent()) {
             return catalog.findByTitleAndAuthor(title.get(), author.get());
-        }else if(title.isPresent()){
+        } else if (title.isPresent()) {
             return catalog.findByTitle(title.get());
-        }else if(author.isPresent()){
+        } else if (author.isPresent()) {
             return catalog.findByAuthor(author.get());
         }
         return catalog.findAll();
     }
 
-    @GetMapping(params = {"title"})
-    @ResponseStatus(HttpStatus.OK)
-    public List<Book> getAllFiltered(@RequestParam String title){
-        return catalog.findByTitle(title);
-    }
-
     @GetMapping("/{id}")
-    public ResponseEntity<Book> getById(@PathVariable Long id){
+    public ResponseEntity<?> getById(@PathVariable Long id) {
         return catalog
                 .findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @Secured({"ROLE_ADMIN"})
-    @PatchMapping("{id}")
+    @Secured("ROLE_ADMIN")
+    @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void updateBook(@PathVariable Long id, @RequestBody RestBookCommand command){
+    public void updateBook(@PathVariable Long id, @RequestBody RestBookCommand command) {
         CatalogUseCase.UpdateBookResponse response = catalog.updateBook(command.toUpdateCommand(id));
-        if(!response.isSuccess()){
+        if (!response.isSuccess()) {
             String message = String.join(", ", response.getErrors());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
         }
     }
 
-    @Secured({"ROLE_ADMIN"})
+    @Secured("ROLE_ADMIN")
     @PutMapping(value = "/{id}/cover", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void addBookCover(@PathVariable Long id, @RequestParam("file")MultipartFile file) throws IOException {
-        System.out.println("Got file: " + file.getOriginalFilename());
+    public void addBookCover(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws IOException {
         catalog.updateBookCover(new UpdateBookCoverCommand(
                 id,
                 file.getBytes(),
@@ -85,30 +79,30 @@ public class CatalogController {
         ));
     }
 
-    @Secured({"ROLE_ADMIN"})
+    @Secured("ROLE_ADMIN")
     @DeleteMapping("/{id}/cover")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeBookCover(@PathVariable Long id) {
         catalog.removeBookCover(id);
     }
 
-    @Secured({"ROLE_ADMIN"})
+    @Secured("ROLE_ADMIN")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Void> addBook(@Valid @RequestBody RestBookCommand command){
+    public ResponseEntity<Void> addBook(@Valid @RequestBody RestBookCommand command) {
         Book book = catalog.addBook(command.toCreateCommand());
-        return ResponseEntity.created(createBookUri(book)).build();
+        return ResponseEntity.created(createdBookUri(book)).build();
     }
 
-    @Secured({"ROLE_ADMIN"})
+    @Secured("ROLE_ADMIN")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteById(@PathVariable Long id){
+    public void deleteById(@PathVariable Long id) {
         catalog.removeById(id);
     }
 
-    private URI createBookUri(Book book) {
-        return ServletUriComponentsBuilder.fromCurrentRequestUri().path("/" + book.getId().toString()).build().toUri();
+    private URI createdBookUri(Book book) {
+        return new CreatedURI("/" + book.getId().toString()).uri();
     }
 
     @Data
@@ -123,19 +117,18 @@ public class CatalogController {
         private Integer year;
 
         @NotNull
-        @DecimalMin("0.00")
-        private BigDecimal price;
-
-        @NotNull
         @PositiveOrZero
         private Long available;
 
-        CreateBookCommand toCreateCommand(){
-            return new CreateBookCommand(
-                    title, authors, year, price, available);
+        @NotNull
+        @DecimalMin("0.00")
+        private BigDecimal price;
+
+        CreateBookCommand toCreateCommand() {
+            return new CreateBookCommand(title, authors, year, price, available);
         }
 
-        UpdateBookCommand toUpdateCommand(Long id){
+        UpdateBookCommand toUpdateCommand(Long id) {
             return new UpdateBookCommand(id, title, authors, year, price);
         }
     }

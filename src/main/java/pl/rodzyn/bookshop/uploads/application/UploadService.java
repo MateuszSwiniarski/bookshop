@@ -12,8 +12,8 @@ import java.util.Optional;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class UploadService implements UploadUseCase {
-    private  final UploadJpaRepository repository;
+class UploadService implements UploadUseCase {
+    private final UploadJpaRepository repository;
 
     @Override
     public Upload save(SaveUploadCommand command) {

@@ -12,6 +12,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import pl.rodzyn.bookshop.catalog.application.port.CatalogInitializerUseCase;
 import pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase;
@@ -23,7 +24,6 @@ import pl.rodzyn.bookshop.order.application.port.ManipulateOrderUseCase;
 import pl.rodzyn.bookshop.order.application.port.QueryOrderUseCase;
 import pl.rodzyn.bookshop.order.domain.Recipient;
 
-import javax.transaction.Transactional;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -37,11 +37,12 @@ import static pl.rodzyn.bookshop.catalog.application.port.CatalogUseCase.*;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class CatalogInitializerService implements CatalogInitializerUseCase {
-    private final CatalogUseCase catalog;
+class CatalogInitializerService implements CatalogInitializerUseCase {
+
+    private final AuthorJpaRepository authorJpaRepository;
     private final ManipulateOrderUseCase placeOrder;
     private final QueryOrderUseCase queryOrder;
-    private final AuthorJpaRepository authorRepository;
+    private final CatalogUseCase catalog;
     private final RestTemplate restTemplate;
 
     @Override
@@ -51,9 +52,8 @@ public class CatalogInitializerService implements CatalogInitializerUseCase {
         placeOrder();
     }
 
-    private void initData(){
-        ClassPathResource resource = new ClassPathResource("books.csv");
-        try(BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()))){
+    private void initData() {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new ClassPathResource("books.csv").getInputStream()))) {
             CsvToBean<CsvBook> build = new CsvToBeanBuilder<CsvBook>(reader)
                     .withType(CsvBook.class)
                     .withIgnoreLeadingWhiteSpace(true)
@@ -61,18 +61,18 @@ public class CatalogInitializerService implements CatalogInitializerUseCase {
 
             build.stream().forEach(this::initBook);
         } catch (IOException e) {
-            throw new IllegalStateException("Faild to parse CSV file", e);
+            throw new IllegalStateException("Failed to parse CSV file", e);
         }
     }
 
     private void initBook(CsvBook csvBook) {
-        Set<Long> authors = Arrays.stream(csvBook.authors.split(","))
-                .filter(StringUtils::isNoneBlank)
+        Set<Long> authors = Arrays
+                .stream(csvBook.authors.split(","))
+                .filter(StringUtils::isNotBlank)
                 .map(String::trim)
                 .map(this::getOrCreateAuthor)
                 .map(BaseEntity::getId)
                 .collect(Collectors.toSet());
-
         CreateBookCommand command = new CreateBookCommand(
                 csvBook.title,
                 authors,
@@ -81,19 +81,19 @@ public class CatalogInitializerService implements CatalogInitializerUseCase {
                 50L
         );
         Book book = catalog.addBook(command);
-        catalog.updateBookCover(updateBookCoverCommanad(book.getId(), csvBook.thumbnail));
+        catalog.updateBookCover(updateBookCoverCommand(book.getId(), csvBook.thumbnail));
     }
 
-    private UpdateBookCoverCommand updateBookCoverCommanad(Long bookId, String thumbnailUrl) {
+    private UpdateBookCoverCommand updateBookCoverCommand(Long bookId, String thumbnailUrl) {
         ResponseEntity<byte[]> response = restTemplate.exchange(thumbnailUrl, HttpMethod.GET, null, byte[].class);
         String contentType = response.getHeaders().getContentType().toString();
         return new UpdateBookCoverCommand(bookId, response.getBody(), contentType, "cover");
     }
 
     private Author getOrCreateAuthor(String name) {
-        return authorRepository
+        return authorJpaRepository
                 .findByNameIgnoreCase(name)
-                .orElseGet(() -> authorRepository.save(new Author(name)));
+                .orElseGet(() -> authorJpaRepository.save(new Author(name)));
     }
 
     @Data
@@ -118,15 +118,15 @@ public class CatalogInitializerService implements CatalogInitializerUseCase {
         Book puzzlers = catalog.findOneByTitle("Java Puzzlers")
                 .orElseThrow(() -> new IllegalStateException("Cannot find a book"));
 
-        //create recipient
+        // create recipient
         Recipient recipient = Recipient
                 .builder()
                 .name("Jan Kowalski")
                 .phone("123-456-789")
-                .street("Armii Krajowej 23")
-                .city("Poznań")
-                .zipCode("45-342")
-                .email("jan@kowalski.pl")
+                .street("Armii Krajowej 31")
+                .city("Krakow")
+                .zipCode("30-150")
+                .email("jan@example.org")
                 .build();
 
         ManipulateOrderUseCase.PlaceOrderCommand command = ManipulateOrderUseCase.PlaceOrderCommand
@@ -143,8 +143,8 @@ public class CatalogInitializerService implements CatalogInitializerUseCase {
         );
         log.info(result);
 
+        // list all orders
         queryOrder.findAll()
-                .forEach(order -> log.info("GOT ORDER WITH TOTAL PRICE: " + order.getFinalPrice()
-                        + " DETAILS: " + order));
+                .forEach(order -> log.info("GOT ORDER WITH TOTAL PRICE: " + order.getFinalPrice() + " DETAILS: " + order));
     }
 }

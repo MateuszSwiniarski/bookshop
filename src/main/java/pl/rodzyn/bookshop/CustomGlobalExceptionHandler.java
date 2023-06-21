@@ -13,21 +13,21 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
-public class CustomerGlobalExceptionHandler {
+class CustomGlobalExceptionHandler {
 
-    @ExceptionHandler
-    public ResponseEntity<Object> handleException(MethodArgumentNotValidException ex){
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Object> handleException(MethodArgumentNotValidException ex) {
         List<String> errors = ex
                 .getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(x -> x.getField() + " + " + x.getDefaultMessage())
+                .map(x -> x.getField() + " - " + x.getDefaultMessage())
                 .collect(Collectors.toList());
         return handleError(HttpStatus.BAD_REQUEST, errors);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Object> handle(IllegalArgumentException ex){
+    public ResponseEntity<Object> handle(IllegalArgumentException ex) {
         return handleError(HttpStatus.BAD_REQUEST, List.of(ex.getMessage()));
     }
 
@@ -38,5 +38,4 @@ public class CustomerGlobalExceptionHandler {
         body.put("errors", errors);
         return new ResponseEntity<>(body, status);
     }
-
 }

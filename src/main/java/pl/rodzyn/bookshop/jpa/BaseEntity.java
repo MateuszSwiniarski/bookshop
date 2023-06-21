@@ -10,12 +10,11 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
 import java.util.UUID;
 
-@MappedSuperclass
 @Getter
 @Setter
+@MappedSuperclass
 @EqualsAndHashCode(of = "uuid")
 public abstract class BaseEntity {
-
     @Id
     @GeneratedValue
     private Long id;
@@ -23,5 +22,5 @@ public abstract class BaseEntity {
     private String uuid = UUID.randomUUID().toString();
 
     @Version
-    private Long version;
+    private long version;
 }

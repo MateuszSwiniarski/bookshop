@@ -10,13 +10,13 @@ import pl.rodzyn.bookshop.catalog.domain.Author;
 import java.util.List;
 
 @RestController
-@RequestMapping("/authors")
 @AllArgsConstructor
-public class AuthorsController {
+@RequestMapping("/authors")
+class AuthorsController {
     private final AuthorsUseCase authors;
 
     @GetMapping
-    public List<Author> findAll(){
+    public List<Author> findAll() {
         return authors.findAll();
     }
 }

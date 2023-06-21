@@ -2,6 +2,7 @@ package pl.rodzyn.bookshop.order.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.rodzyn.bookshop.catalog.db.BookJpaRepository;
 import pl.rodzyn.bookshop.catalog.domain.Book;
 import pl.rodzyn.bookshop.order.application.port.ManipulateOrderUseCase;
@@ -10,12 +11,11 @@ import pl.rodzyn.bookshop.order.db.RecipientJpaRepository;
 import pl.rodzyn.bookshop.order.domain.*;
 import pl.rodzyn.bookshop.security.UserSecurity;
 
-import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@org.springframework.transaction.annotation.Transactional
 @RequiredArgsConstructor
 class ManipulateOrderService implements ManipulateOrderUseCase {
     private final OrderJpaRepository repository;
@@ -78,15 +78,15 @@ class ManipulateOrderService implements ManipulateOrderUseCase {
         return repository
                 .findById(command.getOrderId())
                 .map(order -> {
-                    if (!userSecurity.isOwnerOrAdmin(order.getRecipient().getEmail(), command.getUser())) {
-                        return UpdateStatusResponse.failure(Error.FORBIDDEN);
+                    if(userSecurity.isOwnerOrAdmin(order.getRecipient().getEmail(), command.getUser())) {
+                        UpdateStatusResult result = order.updateStatus(command.getStatus());
+                        if (result.isRevoked()) {
+                            bookJpaRepository.saveAll(revokeBooks(order.getItems()));
+                        }
+                        repository.save(order);
+                        return UpdateStatusResponse.success(order.getStatus());
                     }
-                    UpdateStatusResult result = order.updateStatus(command.getStatus());
-                    if (result.isRevoked()) {
-                        bookJpaRepository.saveAll(revokeBooks(order.getItems()));
-                    }
-                    repository.save(order);
-                    return UpdateStatusResponse.success(order.getStatus());
+                    return UpdateStatusResponse.failure(Error.FORBIDDEN);
                 })
                 .orElse(UpdateStatusResponse.failure(Error.NOT_FOUND));
     }

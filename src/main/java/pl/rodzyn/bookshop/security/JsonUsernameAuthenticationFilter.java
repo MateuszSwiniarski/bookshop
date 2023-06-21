@@ -10,7 +10,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class JsonUsernameAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+class JsonUsernameAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -24,3 +24,4 @@ public class JsonUsernameAuthenticationFilter extends UsernamePasswordAuthentica
         return this.getAuthenticationManager().authenticate(token);
     }
 }
+

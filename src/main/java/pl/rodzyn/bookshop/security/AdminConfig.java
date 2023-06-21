@@ -10,7 +10,7 @@ import java.util.stream.*;
 
 @Data
 @ConfigurationProperties("app.security.admin")
-public class AdminConfig {
+class AdminConfig {
     private String username;
     private String password;
     private Set<String> roles;
@@ -23,3 +23,4 @@ public class AdminConfig {
         );
     }
 }
+

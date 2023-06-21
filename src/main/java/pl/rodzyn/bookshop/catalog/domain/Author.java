@@ -14,14 +14,15 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity
 @Getter
 @Setter
+@Entity
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
 @ToString(exclude = "books")
 public class Author extends BaseEntity {
-      private String name;
+
+    private String name;
 
     @ManyToMany(mappedBy = "authors", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonIgnoreProperties("authors")
@@ -30,16 +31,16 @@ public class Author extends BaseEntity {
     @CreatedDate
     private LocalDateTime createdAt;
 
-    public Author(String name){
+    public Author(String name) {
         this.name = name;
     }
 
-    public void addBook(Book book){
+    public void addBook(Book book) {
         books.add(book);
         book.getAuthors().add(this);
     }
 
-    public void removeBook(Book book){
+    public void removeBook(Book book) {
         books.remove(book);
         book.getAuthors().remove(this);
     }

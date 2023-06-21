@@ -74,8 +74,8 @@ public interface ManipulateOrderUseCase {
         }
     }
 
-    @Getter
     @AllArgsConstructor
+    @Getter
     enum Error {
         NOT_FOUND(HttpStatus.NOT_FOUND),
         FORBIDDEN(HttpStatus.FORBIDDEN);

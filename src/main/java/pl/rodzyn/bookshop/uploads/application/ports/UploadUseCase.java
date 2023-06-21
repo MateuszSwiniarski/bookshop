@@ -7,7 +7,6 @@ import pl.rodzyn.bookshop.uploads.domain.Upload;
 import java.util.Optional;
 
 public interface UploadUseCase {
-
     Upload save(SaveUploadCommand command);
 
     Optional<Upload> getById(Long id);

@@ -24,12 +24,8 @@ public class Upload extends BaseEntity {
     private byte[] file;
     private String contentType;
     private String filename;
-
     @CreatedDate
     private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
 
     public Upload(String filename, String contentType, byte[] file) {
         this.filename = filename;

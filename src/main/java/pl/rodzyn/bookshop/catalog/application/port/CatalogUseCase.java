@@ -11,16 +11,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static java.util.Collections.*;
+
 public interface CatalogUseCase {
-    List<Book> findByTitle(String title);
+    List<Book> findAll();
 
     Optional<Book> findById(Long id);
+
+    List<Book> findByTitle(String title);
 
     Optional<Book> findOneByTitle(String title);
 
     List<Book> findByAuthor(String author);
-
-    List<Book> findAll();
 
     List<Book> findByTitleAndAuthor(String title, String author);
 
@@ -64,7 +66,7 @@ public interface CatalogUseCase {
 
     @Value
     class UpdateBookResponse {
-        public static UpdateBookResponse SUCCESS = new UpdateBookResponse(true, Collections.emptyList());
+        public static UpdateBookResponse SUCCESS = new UpdateBookResponse(true, emptyList());
 
         boolean success;
         List<String> errors;
