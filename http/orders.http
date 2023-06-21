@@ -15,11 +15,11 @@ Content-Type: application/json
 {
   "items": [
     {
-      "bookId": 89,
+      "bookId": 151,
       "quantity": 1
     },
     {
-      "bookId": 12,
+      "bookId": 160,
       "quantity": 2
     }
   ],
@@ -34,7 +34,7 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:8080/orders/121
+GET http://localhost:8080/orders/248
 
 ###
 GET http://localhost:8080/uploads/90/file
